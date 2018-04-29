@@ -18,7 +18,7 @@ const consumesTheObjects = true;
 
 exports.data = {
   sentences: {
-    'game-intro': 'Te acabas de despertar y apareces en una habitación sin ventanas iluminada de rojo. Te sientes un poco aturdido aún, pero eso no te impide darte cuenta que estás encadenado. No sabes qué haces ahí ni por qué. Te preguntas cómo podrías salir vivo de esta situación...',
+    'game-intro': 'Tommy, te acabas de despertar y apareces en una habitación sin ventanas iluminada de rojo. Te sientes un poco aturdido aún, pero eso no te impide darte cuenta que estás encadenado. No sabes qué haces ahí ni por qué. Te preguntas cómo podrías salir vivo de esta situación...',
     help: 'Puedes hacer las siguientes acciones: Mirar, Abrir, Usar, Ir, Coger, Inventario, Atacar y Defenderse. Puedes moverte por dirección (adelante) o por nombre ¿Qué quieres hacer a continuación?',
     'help-no-screen': 'Puedes hacer las siguientes acciones: Mirar, Abrir, Usar, Ir, Coger, Inventario, Atacar y Defenderse. ¿Qué quieres hacer a continuación?',
     fallback: 'No te entiendo. Di Ayuda si necesitas ayuda. ¿Has revisado bien el cubo?',

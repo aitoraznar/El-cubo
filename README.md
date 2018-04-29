@@ -1,7 +1,8 @@
 # El Cubo
 
-A conversational game for Google Assistant.
+Take the role of Tommy in one the worst moments of his life. Use voice commands to guide him and get him out of that trouble.
 
+Available on Google assistant.
 
 # SCURE
 
