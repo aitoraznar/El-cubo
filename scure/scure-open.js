@@ -3,7 +3,7 @@ const aResponse = require('./scure-response').aResponse;
 
 const scureOpen = (hatchName, data, scure) => {
   const roomId = data.roomId;
-  const hatch = scure.hatchs.getHatch(hatchName);
+  const hatch = scure.hatchs.getHatchByName(hatchName);
 
   if (isEmptyArg(hatchName)) {
       return aResponse(scure.sentences.get('item-notopeneable', { name: hatchName }));

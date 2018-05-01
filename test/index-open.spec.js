@@ -23,8 +23,8 @@ describe('El Cubo - when Opening a Hatch', () => {
   it(`tells cannot found an Hatch outside current room`, () => {
       const request = aDfaRequest()
           .withIntent('open')
-          .withArgs({ arg: 'cuboC-escotilla-derecha' })
-          .withData({ roomId: 'cuboA' })
+          .withArgs({ arg: 'escotilla derecha' })
+          .withData({ roomId: 'cuboC' })
           .build();
 
       elCubo.elCubo(request);
@@ -35,7 +35,7 @@ describe('El Cubo - when Opening a Hatch', () => {
   it(`tells cannot open a locked Hatch`, () => {
       const request = aDfaRequest()
           .withIntent('open')
-          .withArgs({ arg: 'cuboA-escotilla-frontal' })
+          .withArgs({ arg: 'escotilla frontal' })
           .withData({ roomId: 'cuboA' })
           .build();
 
@@ -47,7 +47,7 @@ describe('El Cubo - when Opening a Hatch', () => {
   it(`tells can open a Hatch and describe next room`, () => {
       const request = aDfaRequest()
           .withIntent('open')
-          .withArgs({ arg: 'cuboA-escotilla-superior' })
+          .withArgs({ arg: 'Escotilla superior' })
           .withData({ roomId: 'cuboA' })
           .build();
 
@@ -60,7 +60,7 @@ describe('El Cubo - when Opening a Hatch', () => {
     it(`tells cannot open a locked Hatch`, () => {
         const request = aDfaRequest()
             .withIntent('open')
-            .withArgs({ arg: 'cuboA-escotilla-frontal' })
+            .withArgs({ arg: 'escotilla frontal' })
             .withData({ roomId: 'cuboA' })
             .build();
 
@@ -73,7 +73,7 @@ describe('El Cubo - when Opening a Hatch', () => {
     beforeEach(() => {
         const request = aDfaRequest()
             .withIntent('open')
-            .withArgs({ arg: 'cuboA-escotilla-superior' })
+            .withArgs({ arg: 'escotilla superior' })
             .withData({ roomId: 'cuboA' })
             .build();
 
@@ -83,7 +83,7 @@ describe('El Cubo - when Opening a Hatch', () => {
     it(`tells description of the next room`, () => {
         const request = aDfaRequest()
             .withIntent('open')
-            .withArgs({ arg: 'cuboA-escotilla-superior' })
+            .withArgs({ arg: 'escotilla superior' })
             .withData({ roomId: 'cuboA' })
             .build();
 
