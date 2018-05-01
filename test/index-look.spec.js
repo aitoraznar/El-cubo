@@ -74,6 +74,18 @@ describe('El Cubo - when looking up', () => {
     expect(getDfaApp().lastAsk).to.equal(scure.items.getItem('cuboA-cuerda-izq').description);
   });
 
+    it('looks the description of the proper item when in room', () => {
+        const request = aDfaRequest()
+            .withIntent('look')
+            .withArgs({ arg: 'Escotilla superior' })
+            .withData({ roomId: 'cuboA' })
+            .build();
+
+        elCubo.elCubo(request);
+
+        expect(getDfaApp().lastAsk).to.contains('escotilla');
+    });
+
   xit('looks the description of the proper item in a universally located item (item.location == null)', () => {
     const request = aDfaRequest()
       .withIntent('look')
