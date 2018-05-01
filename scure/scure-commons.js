@@ -41,6 +41,8 @@ const getPossibleDestinationsSentence = (scure, data) => {
 
 const isUnlocked = (lockName, unlocked) => (unlocked && unlocked.indexOf(lockName) >= 0);
 
+const isOpened = (lockName, isOpened) => (isOpened && isOpened.indexOf(lockName) >= 0);
+
 const ifMatchCondition = (data, scure) => (descr) => {
   if (descr.condition.indexOf(':') === -1) return true;
   const [operator, itemId] = descr.condition.split(':', 2);
@@ -52,6 +54,10 @@ const ifMatchCondition = (data, scure) => (descr) => {
   if (operator === 'unlocked' || operator === '!unlocked') {
     const isFree = isUnlocked(itemId, data.unlocked);
     return (isNegated && !isFree) || (!isNegated && isFree);
+  }
+  if (operator === 'opened' || operator === '!opened') {
+      const isOpened = scure.hatchs.isOpened(itemId, data.opened);
+      return (isNegated && !isOpened) || (!isNegated && isOpened);
   }
   return true;
 };

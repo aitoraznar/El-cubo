@@ -16,6 +16,7 @@ const cleanData = require('./lib/common').cleanData;
 const welcome = require('./intents/others').welcome;
 const startGame = require('./intents/startGame').startGame;
 const walk = require('./intents/walk').walk;
+const open = require('./intents/open').open;
 const look = require('./intents/look').look;
 const pickup = require('./intents/pickup').pickup;
 const use = require('./intents/use').use;
@@ -59,6 +60,7 @@ const elCubo = (request, response) => {
   actionMap.set('help', help(scure));
   actionMap.set('look', look(scure));
   actionMap.set('walk', walk(scure));
+  actionMap.set('open', open(scure));
   actionMap.set('pickup', pickup(scure));
   actionMap.set('use', use(scure));
   actionMap.set('inventory', inventory(scure));

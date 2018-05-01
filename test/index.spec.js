@@ -12,7 +12,7 @@ describe('El Cubo - others', () => {
 
     elCubo.elCubo(request);
 
-    expect(getDfaApp().lastAsk).to.contains('Te acabas de despertar');
+    expect(getDfaApp().lastAsk).to.contains('acabas de despertar');
   });
 
   it('tells you the time and map when help', () => {
