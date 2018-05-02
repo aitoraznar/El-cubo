@@ -56,6 +56,8 @@ exports.data = {
   init: {
     life: 100,
     roomId: 'cuboA',
+    inventory: ['dice', 'boots'],
+    picked: ['dice', 'boots']
   },
   rooms: [
     aRoom('cuboA', 'Cubo A', [], 'La habitación tiene forma de cubo y está iluminada de rojo. Tiene 3 escotillas, una arriba, una delante y otra a tu derecha. En el centro de la habitación ves dos cuerdas.', {
@@ -99,6 +101,8 @@ exports.data = {
     'cuboF': ['cuboB', 'cuboH']
   },
   items: [
+    anItem('dice', 'Dado de 6 caras', ['dado', 'dados', 'dado de 6 caras', 'dado de 6 lados'], 'Es un dado de 6 caras', null, isPickable),
+    anItem('boots', 'Botas', ['botas', 'zapatos', 'calzado'], 'Son unas botas de marca Coronel Tapioca de cuero marrón.', null, isPickable),
     anItem('cuboA-escotillas', 'Escotillas', ['escotillas'], 'Son tres escotillas, están situadas justo en el centro del lateral. Paracen como de un submarino, el tamaño es como para que solo una persona a la vez pueda entrar por ella y hay una escalera incrustada en la pared que te permite acceder a ella. Tiene un accionador circular en el centro que supones que es para abrirla.', 'cuboA', !isPickable),
     anItem('cuboA-cuerdas', 'Cuerdas', ['cuerdas', 'las cuerdas'], 'Ves dos cuerdas, una la izquierda y otra a la derecha que se dirigen hasta la esquina opuesta a la tuya. Ves que las cuerdas están a tu alcance.', 'cuboA', !isPickable),
     anItem('cuboA-cuerda-izq', 'Cuerda izquierda', ['cuerda izquierda', 'cuerda de la izquierda', 'cordón izquierdo'], 'Ves que la cuerda va hasta el fondo y sube por la pared a través de guías, continúa por el techo y termina casi encima de ti. Aprecias que tiene algo brillante en el extremo pero no llegas a saber qué es. Podrías tirar de la cuerda, ¿tiras de ella?', 'cuboA', !isPickable),
@@ -113,8 +117,8 @@ exports.data = {
         aCondDesc('else', 'Es una cadena robusta anclada a la pared y a tu pierna derecha. El extremo atado a tu pierna tiene una cerradura, crees que podrías abrirla con una llave o unas ganzúas.'),
       ], 'cuboA', !isPickable),
 
-    anItem('cuboG-dado', 'Dado de 6 caras', ['dado', 'dados', 'dado de 6 caras', 'dado de 6 lados'], 'Es un dado de 6 caras, tiene el número 1 hacia arriba, el 4 delante y el 6 debajo', 'cuboG', isPickable),
 
+      anItem('cuboB-crowbar', 'Palanca', ['barra métalica', 'palanca'], 'Es una palanca métalica que me podría servir para defenderme o hacer fuerza en alguna escotilla.', 'cuboB', isPickable),
   ],
   usages: [
     anUsage('cuboA-cuerda-izq', [
