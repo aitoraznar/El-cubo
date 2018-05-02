@@ -54,12 +54,12 @@ describe('El Cubo - when looking up', () => {
     const request = aDfaRequest()
       .withIntent('look')
       .withArgs({ arg: 'dado' })
-      .withData({ roomId: 'cuboG', inventory: ['cuboG-dado'] })
+      .withData({ roomId: 'cuboG', inventory: ['dice'] })
       .build();
 
     elCubo.elCubo(request);
 
-    expect(getDfaApp().lastAsk).to.equal(scure.items.getItem('cuboG-dado').description);
+    expect(getDfaApp().lastAsk).to.equal(scure.items.getItem('dice').description);
   });
 
   it('looks the description of the proper item when in room', () => {

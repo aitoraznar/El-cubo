@@ -29,13 +29,13 @@ describe('El Cubo - when picking up', () => {
   it('tells you item unknown when arg, but in different room', () => {
     const request = aDfaRequest()
       .withIntent('pickup')
-      .withArgs({ arg: 'dado' })
+      .withArgs({ arg: 'palanca' })
       .withData({ roomId: 'cuboA' })
       .build();
 
     elCubo.elCubo(request);
 
-    const itemName = scure.items.getItem('cuboG-dado').name.toLowerCase();
+    const itemName = scure.items.getItem('cuboB-crowbar').name.toLowerCase();
     expect(getDfaApp().lastAsk).to.contains(`No veo el objeto ${itemName} por aquí`);
   });
 
@@ -55,13 +55,13 @@ describe('El Cubo - when picking up', () => {
   it('tells you it cannot be picked when item already picked up', () => {
     const request = aDfaRequest()
       .withIntent('pickup')
-      .withArgs({ arg: 'dado' })
-      .withData({ roomId: 'cuboG', picked: ['cuboG-dado'] })
+      .withArgs({ arg: 'palanca' })
+      .withData({ roomId: 'cuboB', picked: ['cuboB-crowbar'] })
       .build();
 
     elCubo.elCubo(request);
 
-    const itemName = scure.items.getItem('cuboG-dado').name.toLowerCase();
+    const itemName = scure.items.getItem('cuboB-crowbar').name.toLowerCase();
     expect(getDfaApp().lastAsk).to.contains(`Ya me llevé el objeto ${itemName}.`);
   });
 
@@ -69,24 +69,24 @@ describe('El Cubo - when picking up', () => {
     beforeEach(() => {
       const request = aDfaRequest()
         .withIntent('pickup')
-        .withArgs({ arg: 'dado' })
-        .withData({ roomId: 'cuboG' })
+        .withArgs({ arg: 'palanca' })
+        .withData({ roomId: 'cuboB' })
         .build();
 
       elCubo.elCubo(request);
     });
 
     it('tells you it picked it up when valid arg', () => {
-      const itemName = scure.items.getItem('cuboG-dado').name.toLowerCase();
+      const itemName = scure.items.getItem('cuboB-crowbar').name.toLowerCase();
       expect(getDfaApp().lastAsk).to.contains(`Me llevo el objeto ${itemName} conmigo`);
     });
 
     it('adds the object to inventory', () => {
-      expect(getDfaApp().data.inventory).to.eql(['cuboG-dado']);
+      expect(getDfaApp().data.inventory).to.eql(['cuboB-crowbar']);
     });
 
     it('marks it as picked up', () => {
-      expect(getDfaApp().data.picked).to.eql(['cuboG-dado']);
+      expect(getDfaApp().data.picked).to.eql(['cuboB-crowbar']);
     });
   });
 
@@ -106,13 +106,13 @@ describe('El Cubo - when picking up', () => {
   it('tells you first that it has it, if item already in inventory', () => {
     const request = aDfaRequest()
       .withIntent('pickup')
-      .withArgs({ arg: 'dado' })
-      .withData({ roomId: 'cuboG', inventory: ['cuboG-dado'] })
+      .withArgs({ arg: 'palanca' })
+      .withData({ roomId: 'cuboB', inventory: ['cuboB-crowbar'] })
       .build();
 
     elCubo.elCubo(request);
 
-    const itemName = scure.items.getItem('cuboG-dado').name.toLowerCase();
+    const itemName = scure.items.getItem('cuboB-crowbar').name.toLowerCase();
     expect(getDfaApp().lastAsk).to.contains('Ya llevo conmigo');
     expect(getDfaApp().lastAsk).to.contains(itemName);
   });

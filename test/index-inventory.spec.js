@@ -4,7 +4,7 @@ describe('El Cubo - inventory', () => {
   it('tells you your inventory', () => {
     const request = aDfaRequest()
       .withIntent('inventory')
-      .withData({ inventory: ['cuboG-dado'] })
+      .withData({ inventory: ['dice'] })
       .build();
 
     elCubo.elCubo(request);
@@ -16,7 +16,7 @@ describe('El Cubo - inventory', () => {
   it('tells you your inventory with multiple items', () => {
     const request = aDfaRequest()
       .withIntent('inventory')
-      .withData({ inventory: ['cuboA-llaves', 'cuboG-dado'] })
+      .withData({ inventory: ['cuboA-llaves', 'dice'] })
       .build();
 
     elCubo.elCubo(request);

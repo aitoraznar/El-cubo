@@ -57,7 +57,7 @@ describe('El Cubo - when Opening a Hatch', () => {
   });
 
   //TODO No puedo abrir la primera escotilla si estoy encadenado
-    it(`tells cannot open a locked Hatch`, () => {
+    it(`tells cannot open a Hatch when I'm chained`, () => {
         const request = aDfaRequest()
             .withIntent('open')
             .withArgs({ arg: 'escotilla frontal' })
