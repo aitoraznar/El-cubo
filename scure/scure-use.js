@@ -146,15 +146,53 @@ const scureUseTwoItems = (itemName1, itemName2, data, scure) => {
   return aResponse(getSentence(response), data);
 };
 
+const scureOpen = (hatch, data, scure) => {
+    const isInLocation = (hatch.location === null) || (data.roomId === hatch.location && hatch.location !== null);
+    if (!isInLocation) {
+        return aResponse(scure.sentences.get('hatch-notseen'));
+    }
+
+    //Check if the Hatch is locked (Cannot be opened)
+    if (hatch.isLocked) {
+        return aResponse(scure.sentences.get('hatch-locked'));
+    }
+
+    //Open Hatch
+    const isFirstTimeOpened = scure.items.isOpened(hatch.id);
+    scure.items.open(hatch.id);
+
+    let response = scure.sentences.get('hatch-opened', { name: hatch.name });
+
+    const openedCondition = hatch.description.find(desc => desc.condition.startsWith('opened'));
+    //Add the description of the next cube
+    if (isFirstTimeOpened) {
+        response += ` ${openedCondition.description} `;
+    }
+
+    return aResponse(response, data);
+};
+
 const scureUse = (itemNames, data, scure) => {
-  const invalidationSentence = validateUsability(itemNames, data, scure);
-  if (invalidationSentence) {
-    return aResponse(invalidationSentence, data);
+  if (itemNames && itemNames.length === 0) {
+    return scure.sentences.get('use-noarg');
   }
-  if (itemNames.length === 1) {
-    return scureUseOneItem(itemNames[0], data, scure);
+
+  const item = scure.items.getBestItem(itemNames[0], data.roomId);
+  const isHatch = item.isOpeneable;
+  if (isHatch) {
+    return scureOpen(item, data, scure);
+
+  } else {
+    const invalidationSentence = validateUsability(itemNames, data, scure);
+    if (invalidationSentence) {
+        return aResponse(invalidationSentence, data);
+    }
+
+    if (itemNames.length === 1) {
+        return scureUseOneItem(itemNames[0], data, scure);
+    }
+    return scureUseTwoItems(itemNames[0], itemNames[1], data, scure);
   }
-  return scureUseTwoItems(itemNames[0], itemNames[1], data, scure);
 };
 
 exports.scureUse = scureUse;

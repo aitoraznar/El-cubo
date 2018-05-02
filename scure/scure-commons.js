@@ -56,7 +56,7 @@ const ifMatchCondition = (data, scure) => (descr) => {
     return (isNegated && !isFree) || (!isNegated && isFree);
   }
   if (operator === 'opened' || operator === '!opened') {
-      const isOpened = scure.hatchs.isOpened(itemId, data.opened);
+      const isOpened = scure.items.isOpened(itemId, data.opened);
       return (isNegated && !isOpened) || (!isNegated && isOpened);
   }
   return true;

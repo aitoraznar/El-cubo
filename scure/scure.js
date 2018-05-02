@@ -103,6 +103,33 @@ class ScureItems {
     if (typeof picked.length !== 'number') return false;
     return picked.indexOf(itemId) >= 0;
   }
+
+  isOpened(itemId) {
+      if (!this.data.opened) return false;
+      const item = this.getItem(itemId);
+      if (!item) return false;
+      if (!item.isOpeneable) return false;
+      this.data.opened = this.data.opened || [];
+      return this.data.opened.indexOf(itemId) >= 0;
+  }
+
+  open(itemId) {
+    const item = this.getItem(itemId);
+    if (!item) return false;
+    if (!item.isOpeneable) return false;
+    this.data.opened = this.data.opened || [];
+    this.data.opened.push(itemId);
+    return true;
+  }
+
+  close(itemId) {
+    if (!this.data.opened) return false;
+    const item = this.getItem(itemId);
+    if (!item) return false;
+    if (!item.isOpeneable) return false;
+    this.data.opened = this.data.opened || [];
+    this.data.opened.splice(this.data.opened.indexOf(itemId), 1);
+  }
 }
 
 class ScureRooms {
@@ -143,55 +170,12 @@ class ScureRooms {
   }
 }
 
-class ScureHatchs {
-    constructor(data) {
-        this.data = data;
-    }
-
-    getHatch(id) {
-        return this.data.hatchs.find(i => i.id === id);
-    }
-
-    getHatchByName(name) {
-        if (isEmptyArg(name)) return null;
-        return this.data.hatchs.find(i => isTextEqual(i.name, name) || isSynonym(i.synonyms, name));
-    }
-
-    getHatchByNameAndRoom(name, roomId) {
-        if (isEmptyArg(name)) return null;
-        return this.data.hatchs.find(i =>
-        (isTextEqual(i.name, name) || isSynonym(i.synonyms, name))
-        && (i.location === roomId));
-    }
-
-    getBestHatch(hatchName, roomId) {
-        const exactHatchFromRoom = this.getHatchByNameAndRoom(hatchName, roomId);
-        if (exactHatchFromRoom) return exactHatchFromRoom;
-        return this.getHatchByName(hatchName);
-    }
-
-    isOpened(hatchId) {
-        if (!this.data.opened) return false;
-        if (!this.getHatch(hatchId)) return false;
-        this.data.opened = this.data.opened || [];
-        return this.data.opened.indexOf(hatchId) >= 0;
-    }
-
-    openHatch(hatchId) {
-        if (!this.getHatch(hatchId)) return false;
-        this.data.opened = this.data.opened || [];
-        this.data.opened.push(hatchId);
-        return true;
-    }
-}
-
 class Scure {
   constructor(data) {
     this.data = data;
     this.sentences = new ScureSentences(data);
     this.items = new ScureItems(data);
     this.rooms = new ScureRooms(data);
-    this.hatchs = new ScureHatchs(data);
     this.usages = new ScureUsages(data);
   }
 
