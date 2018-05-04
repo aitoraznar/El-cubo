@@ -161,38 +161,30 @@ const scureOpen = (hatch, data, scure) => {
     const isFirstTimeOpened = scure.items.isOpened(hatch.id);
     scure.items.open(hatch.id);
 
-    let response = scure.sentences.get('hatch-opened', { name: hatch.name });
+    //let response = scure.sentences.get('hatch-opened', { name: hatch.name });
+    let response = '';
 
     const openedCondition = hatch.description.find(desc => desc.condition.startsWith('opened'));
+    //console.log('>>>', openedCondition);
+
     //Add the description of the next cube
     if (isFirstTimeOpened) {
         response += ` ${openedCondition.description} `;
     }
 
-    return aResponse(response, data);
+    return response;
 };
 
 const scureUse = (itemNames, data, scure) => {
-  if (itemNames && itemNames.length === 0) {
-    return scure.sentences.get('use-noarg');
+  const invalidationSentence = validateUsability(itemNames, data, scure);
+  if (invalidationSentence) {
+    return aResponse(invalidationSentence, data);
   }
 
-  const item = scure.items.getBestItem(itemNames[0], data.roomId);
-  const isHatch = item.isOpeneable;
-  if (isHatch) {
-    return scureOpen(item, data, scure);
-
-  } else {
-    const invalidationSentence = validateUsability(itemNames, data, scure);
-    if (invalidationSentence) {
-        return aResponse(invalidationSentence, data);
-    }
-
-    if (itemNames.length === 1) {
-        return scureUseOneItem(itemNames[0], data, scure);
-    }
-    return scureUseTwoItems(itemNames[0], itemNames[1], data, scure);
+  if (itemNames.length === 1) {
+    return scureUseOneItem(itemNames[0], data, scure);
   }
+  return scureUseTwoItems(itemNames[0], itemNames[1], data, scure);
 };
 
 exports.scureUse = scureUse;

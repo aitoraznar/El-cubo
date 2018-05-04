@@ -2,7 +2,7 @@ const elCubo = require('../index.js');
 const elCuboData = require('../ric-escape-data').data['es'];
 const scure = require('../scure/scure').buildScureFor(elCuboData);
 
-xdescribe('El Cubo - when using', () => {
+describe('El Cubo - when using', () => {
   const WRONG_ARG_DATA = [
     { arg: null, expectedSentence: 'use-noarg', comment: 'no arg (null)' },
     { arg: [], expectedSentence: 'use-noarg', comment: 'no arg (null)' },
@@ -54,36 +54,36 @@ xdescribe('El Cubo - when using', () => {
     const request = aDfaRequest()
       .withIntent('use')
       .withArgs({ arg: 'llave' })
-      .withData({ roomId: 'habitacion-108', inventory: ['hab108-librarykey'], picked: ['hab108-librarykey'] })
+      .withData({ roomId: 'cuboA', inventory: ['cuboA-llaves'], picked: ['cuboA-llaves'] })
       .build();
 
     elCubo.elCubo(request);
 
-    expect(getDfaApp().lastAsk).to.contains('quieres usar la llave?');
-    expect(getDfaApp().data.inventory).to.contains('hab108-librarykey');
+    expect(getDfaApp().lastAsk).to.contains('llave');
+    expect(getDfaApp().data.inventory).to.contains('cuboA-llaves');
   });
 
   describe('using objects ok several times', () => {
     const TEST_DATA = [
-      { usages: null, expectedText: 'Los primeros minutos del diario', nextUsage: 1 },
-      { usages: [], expectedText: 'Los primeros minutos del diario', nextUsage: 1 },
-      { usages: { 'sala-mandos-diario': 1 }, expectedText: 'Los siguientes minutos del diario', nextUsage: 2 },
-      { usages: { 'sala-mandos-diario': 2 }, expectedText: 'Los últimos minutos del diario', nextUsage: 3 },
-      { usages: { 'sala-mandos-diario': 3 }, expectedText: 'Los primeros minutos del diario', nextUsage: 4 },
+      { usages: null, expectedText: 'dado', nextUsage: 1 },
+      { usages: [], expectedText: 'sacas un 1', nextUsage: 1 },
+      { usages: { 'dice': 1 }, expectedText: 'misma tirada', nextUsage: 2 },
+      { usages: { 'dice': 2 }, expectedText: 'sospechoso', nextUsage: 3 },
+      { usages: { 'dice': 3 }, expectedText: '6 siempre está debajo', nextUsage: 4 },
     ];
 
     TEST_DATA.forEach((data) => {
-      it(`responds depending of number of times used ${data.usages && data.usages['sala-mandos-diario']}`, () => {
+      it(`responds depending of number of times used ${data.usages && data.usages['dice']}`, () => {
         const request = aDfaRequest()
           .withIntent('use')
-          .withArgs({ arg: 'diario' })
-          .withData({ roomId: 'sala-mandos', usages: data.usages })
+          .withArgs({ arg: 'dado' })
+          .withData({ roomId: 'cuboA', usages: data.usages })
           .build();
 
         elCubo.elCubo(request);
 
         expect(getDfaApp().lastAsk).to.contains(data.expectedText);
-        expect(getDfaApp().data.usages['sala-mandos-diario']).to.equal(data.nextUsage);
+        expect(getDfaApp().data.usages['dice']).to.equal(data.nextUsage);
       });
     });
   });
@@ -92,13 +92,13 @@ xdescribe('El Cubo - when using', () => {
     it('adds to unlocked array', () => {
       const request = aDfaRequest()
         .withIntent('use')
-        .withArgs({ arg: 'diario de abordo' })
-        .withData({ roomId: 'sala-mandos', usages: { 'sala-mandos-diario': 1 } })
+        .withArgs({ arg: 'escotilla frontal' })
+        .withData({ roomId: 'cuboC', usages: { 'cuboC-escotilla-frontal': 1 } })
         .build();
 
       elCubo.elCubo(request);
 
-      expect(getDfaApp().data.unlocked).to.eql(['hab108']);
+      expect(getDfaApp().data.unlocked).to.eql(['cuboG-unlocked']);
     });
     it('does not add it twice', () => {
       const request = aDfaRequest()
@@ -116,16 +116,16 @@ xdescribe('El Cubo - when using', () => {
   it('uses items even if wrongly accented', () => {
     const request = aDfaRequest()
       .withIntent('use')
-      .withArgs({ arg: 'diário' })
-      .withData({ roomId: 'sala-mandos' })
+      .withArgs({ arg: 'escotillá superior' })
+      .withData({ roomId: 'cuboA' })
       .build();
 
     elCubo.elCubo(request);
 
-    expect(getDfaApp().data.usages['sala-mandos-diario']).to.equal(1);
+    expect(getDfaApp().data.usages['cuboA-escotilla-superior']).to.equal(1);
   });
 
-  it('uses items that are in two different rooms, but chooses the right one depending on current roomId', () => {
+  xit('uses items that are in two different rooms, but chooses the right one depending on current roomId', () => {
     const request = aDfaRequest()
       .withIntent('use')
       .withArgs({ arg: 'diario' })
@@ -140,16 +140,16 @@ xdescribe('El Cubo - when using', () => {
   it('uses item from the inventory', () => {
     const request = aDfaRequest()
       .withIntent('use')
-      .withArgs({ arg: 'cartera' })
-      .withData({ roomId: 'sala-mandos', picked: ['comedor-cartera'], inventory: ['comedor-cartera'] })
+      .withArgs({ arg: 'dado' })
+      .withData({ roomId: 'cuboA', picked: ['dice'], inventory: ['dice'] })
       .build();
 
     elCubo.elCubo(request);
 
-    expect(getDfaApp().data.usages['comedor-cartera']).to.equal(1);
+    expect(getDfaApp().data.usages['dice']).to.equal(1);
   });
 
-  it('provides - picks items if is a pickable action and disposes old one', () => {
+  xit('provides - picks items if is a pickable action and disposes old one', () => {
     const request = aDfaRequest()
       .withIntent('use')
       .withArgs({ arg: 'cartera' })
@@ -165,7 +165,7 @@ xdescribe('El Cubo - when using', () => {
     expect(getDfaApp().data.inventory).to.contains('combinacion-4815');
   });
 
-  it('provides - picks items if a pickable action even if I dont have it but im in the place', () => {
+  xit('provides - picks items if a pickable action even if I dont have it but im in the place', () => {
     const request = aDfaRequest()
       .withIntent('use')
       .withArgs({ arg: 'cartera' })
@@ -180,16 +180,16 @@ xdescribe('El Cubo - when using', () => {
   it('uses items if they are not attached to a room (null location)', () => {
     const request = aDfaRequest()
       .withIntent('use')
-      .withArgs({ arg: 'robot' })
-      .withData({ roomId: 'habitacion-108' })
+      .withArgs({ arg: 'dado' })
+      .withData({ roomId: 'CuboC' })
       .build();
 
     elCubo.elCubo(request);
 
-    expect(getDfaApp().lastAsk).to.contains('Ya me estás usando');
+    expect(getDfaApp().lastAsk).to.contains('dado');
   });
 
-  it('uses items only once if marked as onlyOnce to true', () => {
+  xit('uses items only once if marked as onlyOnce to true', () => {
     const request = aDfaRequest()
       .withIntent('use')
       .withArgs({ arg: 'cartera' })
@@ -208,19 +208,19 @@ xdescribe('El Cubo - when using', () => {
   it('tries to use two items but fails if no usage for both', () => {
     const request = aDfaRequest()
       .withIntent('use')
-      .withArgs({ arg: ['combinación', 'cartera'] })
+      .withArgs({ arg: ['dado', 'botas'] })
       .withData({
-        roomId: 'habitacion-108',
-        picked: ['comedor-cartera', 'combinacion-4815'],
-        inventory: ['comedor-cartera', 'combinacion-4815']
+        roomId: 'cuboA',
+        picked: ['dice', 'boots'],
+        inventory: ['dice', 'boots']
       })
       .build();
 
     elCubo.elCubo(request);
 
     expect(getDfaApp().lastAsk).to.contains('No puedo usar los objetos');
-    expect(getDfaApp().lastAsk).to.contains('cartera');
-    expect(getDfaApp().lastAsk).to.contains('combinación');
+    expect(getDfaApp().lastAsk).to.contains('dado');
+    expect(getDfaApp().lastAsk).to.contains('botas');
   });
 
   it('tries to use two items but fails if one not exists', () => {
@@ -240,7 +240,7 @@ xdescribe('El Cubo - when using', () => {
     expect(getDfaApp().lastAsk).to.contains('noexiste');
   });
 
-  it('fails to use two items if were used and onlyOnce', () => {
+  xit('fails to use two items if were used and onlyOnce', () => {
     const request = aDfaRequest()
       .withIntent('use')
       .withArgs({ arg: ['combinacion', 'caja fuerte'] })
@@ -260,18 +260,18 @@ xdescribe('El Cubo - when using', () => {
   it('uses two items', () => {
     const request = aDfaRequest()
       .withIntent('use')
-      .withArgs({ arg: ['combinacion', 'caja fuerte'] })
-      .withData({ roomId: 'habitacion-108', picked: ['combinacion-4815'], inventory: ['combinacion-4815'] })
+      .withArgs({ arg: ['llave', 'cadenas'] })
+      .withData({ roomId: 'cuboA', picked: ['cuboA-llaves'], inventory: ['cuboA-llaves'] })
       .build();
 
     elCubo.elCubo(request);
 
-    expect(getDfaApp().lastAsk).to.contains('la caja se ha abierto.');
-    expect(getDfaApp().data.inventory).to.not.contains('combinacion-4815');
-    expect(getDfaApp().data.usages['combinacion-4815-hab108-cajafuerte']).to.equal(1);
+    expect(getDfaApp().lastAsk).to.contains('librado');
+    expect(getDfaApp().data.inventory).to.not.contains('cuboA-llaves');
+    //expect(getDfaApp().data.usages['cuboA-llaves-cuboA-cadenas']).to.equal(1);
   });
 
-  describe('when conditional descriptions (ric + ordenador, for ex)', () => {
+  xdescribe('when conditional descriptions (ric + ordenador, for ex)', () => {
     const TEST_CASES = [
       { unlocked: [], expectedSentence: 'No puedo alterar' },
       { unlocked: ['ricmodified'], expectedSentence: 'he alterado el curso' },
@@ -319,7 +319,7 @@ xdescribe('El Cubo - when using', () => {
     });
   });
 
-  it('ends the game when is ending scene and adds time', () => {
+  xit('ends the game when is ending scene and adds time', () => {
     const request = aDfaRequest()
       .withIntent('use')
       .withArgs({ arg: ['ric', 'ordenador'] })
@@ -333,7 +333,7 @@ xdescribe('El Cubo - when using', () => {
     expect(getDfaApp().lastTell).to.contains('minutos');
   });
 
-  it('ends the game when is ending scene and adds time in English', () => {
+  xit('ends the game when is ending scene and adds time in English', () => {
     const request = aDfaRequest()
       .withIntent('use')
       .withArgs({ arg: ['ric', 'computer'] })
