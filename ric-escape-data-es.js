@@ -1,7 +1,7 @@
 const aRoom = (id, name, synonyms, description, events) =>
   ({ id, name, synonyms, description, events });
-const anItem = (id, name, synonyms, description, location, pickable, isOpeneable, isLocked, pickingResponse) =>
-  ({ id, name, synonyms, description, location, pickable, isOpeneable, isLocked, pickingResponse });
+const anItem = (id, name, synonyms, description, location, pickable, isOpeneable, pickingResponse) =>
+  ({ id, name, synonyms, description, location, pickable, isOpeneable, pickingResponse });
 const anUsage = (items, response, onlyOnce) =>
   ({ items, response, onlyOnce });
 const anUnlockingAction = (response, lock) => ({ isUnlockingAction: true, response, lock });
@@ -16,7 +16,6 @@ const isPickable = true;
 const useOnlyOnce = true;
 const consumesTheObjects = true;
 const isOpeneable = true;
-const isLocked = true;
 
 exports.data = {
   sentences: {
@@ -94,21 +93,21 @@ exports.data = {
         aCondDesc('opened:cuboA-escotilla-superior', 'Desde aquí puedo ver un cubo con luz blanca, es el cubo C.'),
         aCondDesc('!unlocked:primera-escotilla-unlocked', 'Es una escotilla situada justo en el centro del techo. Es como de un submarino, el tamaño es como para que solo una persona a la vez pueda entrar por ella, hay una escalera incrustada en la pared y el techo que te permite acceder a ella. Tiene un accionador circular en el centro que supones que es para abrirla.'),
         aCondDesc('else:primera-escotilla-unlocked', 'Es la escotilla del techo.'),
-    ], 'cuboA', !isPickable, isOpeneable, !isLocked),
-    anItem('cuboA-escotilla-inferior', 'Escotilla inferior', ['escotilla inferior', 'escotilla de abajo'], 'Es la escotilla de enfrente.',
-      'cuboA', !isPickable, isOpeneable, isLocked),
+    ], 'cuboA', !isPickable, isOpeneable),
+    anItem('cuboA-escotilla-inferior', 'Escotilla inferior', ['escotilla inferior', 'escotilla de abajo', 'escotilla debajo'], 'Es la escotilla de debajo.',
+      'cuboA', !isPickable, isOpeneable),
     anItem('cuboA-escotilla-izquierda', 'Escotilla izquierda', ['escotilla izquierda', 'escotilla de la izquierda'], 'Es la escotilla de la izquierda.',
-      'cuboA', !isPickable, isOpeneable, isLocked),
+      'cuboA', !isPickable, isOpeneable),
     anItem('cuboA-escotilla-derecha', 'Escotilla derecha', ['escotilla derecha', 'escotilla de la derecha'], [
         aCondDesc('!unlocked:primera-escotilla-unlocked', 'Es una escotilla situada justo en el centro del lateral. Es como de un submarino, el tamaño es como para que solo una persona a la vez pueda entrar por ella, hay una escalera incrustada en la pared que te permite acceder a ella. Tiene un accionador circular en el centro que supones que es para abrirla.'),
         aCondDesc('else:primera-escotilla-unlocked', 'Es la escotilla de la derecha'),
-    ], 'cuboA', !isPickable, isOpeneable, isLocked),
+    ], 'cuboA', !isPickable, isOpeneable),
     anItem('cuboA-escotilla-frontal', 'Escotilla frontal', ['escotilla delantera', 'escotilla de enfrente', 'escotilla de delante'], [
       aCondDesc('!unlocked:primera-escotilla-unlocked', 'Es una escotilla situada justo en el centro del techo. Es como de un submarino, el tamaño es como para que solo una persona a la vez pueda entrar por ella, hay una escalera incrustada en la pared que te permite acceder a ella. Tiene un accionador circular en el centro que supones que es para abrirla.'),
       aCondDesc('else:primera-escotilla-unlocked', 'Es la escotilla de enfrente'),
-    ], 'cuboA', !isPickable, isOpeneable, isLocked),
-    anItem('cuboA-escotilla-trasera', 'Escotilla trasera', ['escotilla trasera', 'escotilla de abajo'], 'Es la escotilla trasera.',
-      'cuboA', !isPickable, isOpeneable, isLocked),
+    ], 'cuboA', !isPickable, isOpeneable),
+    anItem('cuboA-escotilla-trasera', 'Escotilla trasera', ['escotilla trasera', 'escotilla de atrás'], 'Es la escotilla trasera.',
+      'cuboA', !isPickable, isOpeneable),
 
     anItem('cuboA-escotillas', 'Escotillas', ['escotillas'], 'Son tres escotillas, están situadas justo en el centro del lateral. Paracen como de un submarino, el tamaño es como para que solo una persona a la vez pueda entrar por ella y hay una escalera incrustada en la pared que te permite acceder a ella. Tiene un accionador circular en el centro que supones que es para abrirla.', 'cuboA', !isPickable),
     anItem('cuboA-cuerdas', 'Cuerdas', ['cuerdas', 'las cuerdas'], 'Ves dos cuerdas, una la izquierda y otra a la derecha que se dirigen hasta la esquina opuesta a la tuya. Ves que las cuerdas están a tu alcance.', 'cuboA', !isPickable),
@@ -128,17 +127,17 @@ exports.data = {
 
       //CuboC
     anItem('cuboC-escotilla-superior', 'Escotilla superior', ['escotilla delantera', 'escotilla de enfrente', 'escotilla de delante'], 'Es la escotilla superior.',
-        'cuboC', !isPickable, isOpeneable, isLocked),
-    anItem('cuboC-escotilla-inferior', 'Escotilla inferior', ['escotilla inferior', 'escotilla de abajo'], 'Es la escotilla inferior.',
-        'cuboC', !isPickable, isOpeneable, isLocked),
+        'cuboC', !isPickable, isOpeneable),
+    anItem('cuboC-escotilla-inferior', 'Escotilla inferior', ['escotilla inferior', 'escotilla de abajo', 'escotilla debajo'], 'Es la escotilla inferior.',
+        'cuboC', !isPickable, isOpeneable),
     anItem('cuboC-escotilla-izquierda', 'Escotilla izquierda', ['escotilla izquierda', 'escotilla de la izquierda'], 'Es la escotilla de la izquierda.',
-      'cuboC', !isPickable, isOpeneable, isLocked),
+      'cuboC', !isPickable, isOpeneable),
     anItem('cuboC-escotilla-derecha', 'Escotilla derecha', ['escotilla derecha', 'escotilla de la derecha'], 'Es la escotilla derecha.',
-        'cuboC', !isPickable, isOpeneable, !isLocked),
+        'cuboC', !isPickable, isOpeneable),
     anItem('cuboC-escotilla-frontal', 'Escotilla frontal', ['escotilla delantera', 'escotilla de enfrente', 'escotilla de delante'], 'Es la escotilla de enfrente.',
-      'cuboC', !isPickable, isOpeneable, !isLocked),
-    anItem('cuboC-escotilla-trasera', 'Escotilla trasera', ['escotilla trasera', 'escotilla de abajo'], 'Es la escotilla trasera.',
-      'cuboC', !isPickable, isOpeneable, isLocked),
+      'cuboC', !isPickable, isOpeneable),
+    anItem('cuboC-escotilla-trasera', 'Escotilla trasera', ['escotilla trasera', 'escotilla de atrás'], 'Es la escotilla trasera.',
+      'cuboC', !isPickable, isOpeneable),
 
 
   ],
@@ -173,14 +172,17 @@ exports.data = {
         aCondDescUsage(false, 'unlocked:cuboA-cadenas-unlocked', anUnlockingAction('Abres la escotilla, desde aquí puedo ver un cubo con luz blanca, es el cubo C.', 'cuboC-unlocked')),
       ])
     ], !useOnlyOnce),
+    anUsage('cuboA-escotilla-inferior', ['Esta escotilla está bloqueada, no se puede abrir.'], !useOnlyOnce),
+    anUsage('cuboA-escotilla-izquierda', ['Esta escotilla está bloqueada, no se puede abrir.'], !useOnlyOnce),
+    anUsage('cuboA-escotilla-derecha', ['Esta escotilla está bloqueada, no se puede abrir.'], !useOnlyOnce),
     anUsage('cuboA-escotilla-frontal', [
       aConditionalResponse([
           aCondDescUsage(false, '!unlocked:cuboA-cadenas-unlocked', 'Las cadenas me impiden llegar a abrir la escotilla. Tendré que quitarme primero las cadenas...'),
           aCondDescUsage(false, '!unlocked:locked', 'Esta escotilla está bloqueada, no se puede abrir.'),
       ])
     ], !useOnlyOnce),
+    anUsage('cuboA-escotilla-trasera', ['Esta escotilla está bloqueada, no se puede abrir.'], !useOnlyOnce),
 
-    anUsage('cuboA-escotilla-derecha', ['Esta escotilla está bloqueada, no se puede abrir.'], !useOnlyOnce),
 
     anUsage('cuboC-escotilla-superior', ['Esta escotilla está bloqueada, no se puede abrir.'], !useOnlyOnce),
     anUsage('cuboC-escotilla-inferior', ['Esta escotilla está bloqueada, no se puede abrir.'], !useOnlyOnce),
