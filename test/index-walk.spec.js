@@ -3,45 +3,74 @@ const elCuboData = require('../ric-escape-data').data['es'];
 const scure = require('../scure/scure').buildScureFor(elCuboData);
 
 
-xdescribe('El Cubo - when walking', () => {
-  it('changes the roomId when walking', () => {
+describe('El Cubo - when walking', () => {
+  it('cannot go to a locked room', () => {
     const request = aDfaRequest()
       .withIntent('walk')
-      .withArgs({ arg: 'comedor' })
-      .withData({ roomId: 'pasillo-norte' })
+      .withArgs({ arg: 'cubo C' })
+      .withData({ roomId: 'cuboA' })
       .build();
 
     elCubo.elCubo(request);
 
-    expect(getDfaApp().data.roomId).to.equal('comedor');
-    expect(getDfaApp().lastAsk).to.contains('Estoy en el comedor de la nave espacial. Puedo ver mesas, sillas, comida varia y varios utensilios que no entiendo para qué funcionan. También veo algo en el suelo.');
+    expect(getDfaApp().data.roomId).to.equal('cuboA');
+    expect(getDfaApp().lastAsk).to.contain('cerradas');
   });
 
-  it('cannot change the roomId when walking to somewhere not according to map', () => {
+  it('changes the roomId when walking', () => {
+      const request = aDfaRequest()
+          .withIntent('walk')
+          .withArgs({ arg: 'cubo C' })
+          .withData({ roomId: 'cuboA', unlocked: ['cuboC-unlocked'] })
+          .build();
+
+      elCubo.elCubo(request);
+
+      const cuboA = scure.rooms.getRoom('cuboA');
+      const cuboC = scure.rooms.getRoom('cuboC');
+      expect(getDfaApp().data.roomId).to.equal('cuboC');
+      expect(getDfaApp().lastAsk).to.contain(scure.rooms.getRoom('cuboC').description);
+      expect(getDfaApp().lastAsk).to.contain(cuboA.events.exit);
+  });
+
+  it('cannot change the roomId when walking to Unreachable destination', () => {
     const request = aDfaRequest()
       .withIntent('walk')
-      .withArgs({ arg: 'biblioteca' })
-      .withData({ roomId: 'sala-mandos' })
+      .withArgs({ arg: 'cubo E' })
+      .withData({ roomId: 'cuboA', unlocked: ['cuboE-unlocked'] })
       .build();
 
     elCubo.elCubo(request);
 
-    expect(getDfaApp().data.roomId).to.equal('sala-mandos');
-    expect(getDfaApp().lastAsk).to.contains('No sé ir al sitio biblioteca.');
-    expect(getDfaApp().lastAsk).to.contains('Desde aquí puedo ir a: Pasillo norte');
+    expect(getDfaApp().data.roomId).to.equal('cuboA');
+    const unreachablePlaceSentence = scure.sentences.get('destination-unreachable', { destination: 'cubo E'  });
+    expect(getDfaApp().lastAsk).to.contain(unreachablePlaceSentence);
+  });
+
+  it('tell all hatchs are closed when no arg is given and there are no unlocked rooms available', () => {
+      const request = aDfaRequest()
+          .withIntent('walk')
+          .withArgs({})
+          .withData({ roomId: 'cuboA'})
+          .build();
+
+      elCubo.elCubo(request);
+
+      expect(getDfaApp().data.roomId).to.equal('cuboA');
+      expect(getDfaApp().lastAsk).to.contains('cerradas');
   });
 
   const TEST_DATA = [
-    { room: 'pasillo-norte', destinations: 'Sala de mandos, Comedor y Pasillo central' },
-    { room: 'sala-mandos', destinations: 'Pasillo norte' },
+    { room: 'cuboA', destinations: 'Cubo C', unlocked: ['cuboC-unlocked'] },
+    { room: 'cuboC', destinations: 'Cubo D y Cubo G', unlocked: ['cuboD-unlocked', 'cuboG-unlocked'] },
   ];
 
   TEST_DATA.forEach((data) => {
-    it('explains places to go when no arg is given', () => {
+    it('explains places to go when no arg is given and there are unlocked rooms available', () => {
       const request = aDfaRequest()
         .withIntent('walk')
         .withArgs({})
-        .withData({ roomId: data.room })
+        .withData({ roomId: data.room, unlocked: data.unlocked })
         .build();
 
       elCubo.elCubo(request);
@@ -54,76 +83,27 @@ xdescribe('El Cubo - when walking', () => {
   it('does not change if the room cannot be found', () => {
     const request = aDfaRequest()
       .withIntent('walk')
-      .withArgs({ arg: 'pasillo de la muerte' })
-      .withData({ roomId: 'sala-mandos' })
+      .withArgs({ arg: 'cubo de la muerte' })
+      .withData({ roomId: 'cuboA' })
       .build();
 
     elCubo.elCubo(request);
 
-    expect(getDfaApp().data.roomId).to.equal('sala-mandos');
-    expect(getDfaApp().lastAsk).to.contains('No sé ir al sitio pasillo de la muerte.');
+    expect(getDfaApp().data.roomId).to.equal('cuboA');
+    expect(getDfaApp().lastAsk).to.contains('No sé ir al cubo de la muerte');
+      expect(getDfaApp().lastAsk).not.to.contains(`Desde aquí puedo ir a:`);
   });
 
-  describe('handles locks', () => {
-    it('does not show a room if not unlocked', () => {
-      const request = aDfaRequest()
-        .withIntent('walk')
-        .withArgs({})
-        .withData({ roomId: 'pasillo-sur' })
-        .build();
-
-      elCubo.elCubo(request);
-
-      expect(getDfaApp().lastAsk).to.contains('Desde aquí puedo ir a: Pasillo central');
-    });
-
-    it('shows a room if unlocked', () => {
-      const request = aDfaRequest()
-        .withIntent('walk')
-        .withArgs({})
-        .withData({ roomId: 'pasillo-sur', unlocked: ['hab108'] })
-        .build();
-
-      elCubo.elCubo(request);
-
-      expect(getDfaApp().lastAsk).to.contains('Desde aquí puedo ir a: Habitación 108 y Pasillo central');
-    });
-
-    it('does not change if the room is locked', () => {
-      const request = aDfaRequest()
-        .withIntent('walk')
-        .withArgs({ arg: 'habitación 108' })
-        .withData({ roomId: 'pasillo-sur' })
-        .build();
-
-      elCubo.elCubo(request);
-
-      expect(getDfaApp().data.roomId).to.equal('pasillo-sur');
-      expect(getDfaApp().lastAsk).to.contains('No sé ir al sitio habitación 108.');
-    });
-
-    it('changes room when room is unlocked', () => {
-      const request = aDfaRequest()
-        .withIntent('walk')
-        .withArgs({ arg: 'habitación 108' })
-        .withData({ roomId: 'pasillo-sur', unlocked: ['hab108'] })
-        .build();
-
-      elCubo.elCubo(request);
-
-      expect(getDfaApp().data.roomId).to.equal('habitacion-108');
-      expect(getDfaApp().lastAsk).to.contains(scure.rooms.getRoom('habitacion-108').description);
-    });
-  });
   it('works with unaccented words', () => {
-    const request = aDfaRequest()
-      .withIntent('walk')
-      .withArgs({ arg: 'habitacion 108' })
-      .withData({ roomId: 'pasillo-sur', unlocked: ['hab108'] })
-      .build();
+      const request = aDfaRequest()
+          .withIntent('walk')
+          .withArgs({ arg: 'habitación C' })
+          .withData({ roomId: 'cuboA', unlocked: ['cuboC-unlocked'] })
+          .build();
 
-    elCubo.elCubo(request);
+      elCubo.elCubo(request);
 
-    expect(getDfaApp().data.roomId).to.equal('habitacion-108');
+      expect(getDfaApp().data.roomId).to.equal('cuboC');
   });
+
 });

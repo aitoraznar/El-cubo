@@ -1,6 +1,6 @@
 const elCubo = require('../index.js');
 
-describe('El Cubo - handles language', () => {
+xdescribe('El Cubo - handles language', () => {
   it('gets sentences in english when locale english', () => {
     const request = aDfaRequest()
       .withIntent('walk')
@@ -13,7 +13,7 @@ describe('El Cubo - handles language', () => {
     expect(getDfaApp().lastAsk).to.contains('From here I can go');
   });
 
-  xit('can change language', () => {
+  it('can change language', () => {
     const request = aDfaRequest()
       .withIntent('language')
       .withArgs({ arg: 'english' })
@@ -27,7 +27,7 @@ describe('El Cubo - handles language', () => {
     expect(getDfaApp().lastAsk).to.contains('I will speak in english');
   });
 
-  xit('says cannot change language when language unknown', () => {
+  it('says cannot change language when language unknown', () => {
     const request = aDfaRequest()
       .withIntent('language')
       .withArgs({ arg: 'notknownlang' })
@@ -40,7 +40,7 @@ describe('El Cubo - handles language', () => {
     expect(getDfaApp().lastAsk).to.contains('No sé hablar el idioma notknownlang. Solo sé hablar inglés y español.');
   });
 
-  xit('does not change language if already set', () => {
+  it('does not change language if already set', () => {
     const request = aDfaRequest()
       .withIntent('look')
       .withArgs({ arg: null })
@@ -54,7 +54,7 @@ describe('El Cubo - handles language', () => {
     expect(getDfaApp().lastAsk).to.contains('I am at the control');
   });
 
-  xit('changes language when rawinput comes with english', () => {
+  it('changes language when rawinput comes with english', () => {
     const request = aDfaRequest()
       .withIntent('look')
       .withArgs({ arg: null })
@@ -70,7 +70,7 @@ describe('El Cubo - handles language', () => {
     expect(getDfaApp().data.numCommands).to.equal(10);
   });
 
-  xit('changes language when rawinput comes with spanish', () => {
+  it('changes language when rawinput comes with spanish', () => {
     const request = aDfaRequest()
       .withIntent('look')
       .withArgs({ arg: null })

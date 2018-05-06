@@ -145,6 +145,16 @@ class ScureRooms {
     return this.data.rooms.find(r => isTextEqual(r.name, name) || isSynonym(r.synonyms, name));
   }
 
+  getAllDestinationsIds(fromId) {
+      const getId = (destination) => {
+          if (!destination.isLockedDestination) return destination;
+          if (destination.isLockedDestination) return destination.roomId;
+          return null;
+      };
+
+      return this.data.map[fromId].map(getId).filter(d => d !== null);
+  }
+
   getUnlockedDestinationsIds(fromId, unlocked) {
     const isUnlocked = destination => (unlocked && unlocked.indexOf(destination.lock) >= 0);
     const getId = (destination) => {

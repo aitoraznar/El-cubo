@@ -24,8 +24,10 @@ exports.data = {
     help: 'Puedes hacer las siguientes acciones: Mirar, Abrir, Usar, Ir, Coger, Inventario, Atacar y Defenderse. Puedes moverte por dirección (adelante) o por nombre ¿Qué quieres hacer a continuación?',
     'help-no-screen': 'Puedes hacer las siguientes acciones: Mirar, Abrir, Usar, Ir, Coger, Inventario, Atacar y Defenderse. ¿Qué quieres hacer a continuación?',
     fallback: 'No te entiendo. Di Ayuda si necesitas ayuda. ¿Has revisado bien el cubo?',
-    destinations: 'Desde aquí puedo ir a: {destinations}. ¿Qué quieres que haga?',
-    'destination-unknown': 'No sé ir al sitio {destination}. ¿Qué quieres que haga?',
+    destinations: 'Desde aquí puedo ir a: {destinations}. ¿A dónde quiero ir?',
+    'destination-unreachable': 'No puedo llegar al {destination} desde aquí...',
+    'destination-unknown': 'No sé ir al {destination} desde aquí.',
+    'destination-no-one': 'Todas las escotillas están cerradas, prueba a abrir una primero.',
     'map-alt': 'Mapa con: sala de mandos, pasillo norte, comedor, pasillo central, biblioteca, pasillo sur y habitaciones',
     'remaining-time': 'Tic tac! Te quedan {minutes} minutos y {seconds} segundos para salir antes de que todo explote.',
     'ending-remaining-time': 'Quedaban {timeLeft}',
@@ -59,28 +61,29 @@ exports.data = {
     picked: ['dice', 'boots']
   },
   rooms: [
-    aRoom('cuboA', 'Cubo A', [], 'La habitación tiene forma de cubo y está iluminada de rojo. Tiene 3 escotillas, una arriba, una delante y otra a tu derecha. En el centro de la habitación ves dos cuerdas.', {
+    aRoom('cuboA', 'Cubo A', ['habitación A', 'estancia A'], 'La habitación tiene forma de cubo y está iluminada de rojo. Tiene 3 escotillas, una arriba, una delante y otra a tu derecha. En el centro de la habitación ves dos cuerdas.', {
       'exit': 'Muahahahaha, te mereces todo lo malo que te pase. Estás encerrado debido a las malas acciones que has cometido durante tu vida, solo la redención te dará la libertad. Vigila tus dónde pisas.'
     }),
-    aRoom('cuboB', 'Cubo B', [], 'Cubo 2 descripción. ¿qué haré a continuación?', {}),
-    aRoom('cuboC', 'Cubo C', [], 'Cubo 3 descripción. ¿qué haré a continuación?', {}),
-    aRoom('cuboD', 'Cubo D', [], [
+    aRoom('cuboB', 'Cubo B', ['habitación B', 'estancia B'], 'Cubo 2 descripción. ¿qué haré a continuación?', {}),
+    aRoom('cuboC', 'Cubo C', ['habitación C', 'estancia C'], 'Cubo 3 descripción. ¿qué haré a continuación?', {}),
+    aRoom('cuboD', 'Cubo D', ['habitación D', 'estancia D'], [
       aCondDesc('!picked:comedor-cartera', 'No he cogido... Cubo 2 descripción. ¿qué haré a continuación?'),
       aCondDesc('default', 'Cubo 4 descripción. ¿qué haré a continuación?'),
     ], {}),
-    aRoom('cuboE', 'Cubo E', [], 'Cubo 5 descripción. ¿qué haré a continuación?', {}),
-    aRoom('cuboF', 'Cubo F', [], 'Cubo 6 descripción. ¿qué haré a continuación?', {}),
-    aRoom('cuboG', 'Cubo G', [], 'Cubo 7 descripción. ¿qué haré a continuación?', {}),
-    aRoom('cuboH', 'Cubo H', [], 'Cubo 8 descripción. ¿qué haré a continuación?', {}),
+    aRoom('cuboE', 'Cubo E', ['habitación E', 'estancia E'], 'Cubo 5 descripción. ¿qué haré a continuación?', {}),
+    aRoom('cuboF', 'Cubo F', ['habitación F', 'estancia F'], 'Cubo 6 descripción. ¿qué haré a continuación?', {}),
+    aRoom('cuboG', 'Cubo G', ['habitación G', 'estancia G'], 'Cubo 7 descripción. ¿qué haré a continuación?', {}),
+    aRoom('cuboH', 'Cubo H', ['habitación H', 'estancia H'], 'Cubo 8 descripción. ¿qué haré a continuación?', {}),
   ],
   map: {
-    'cuboA': ['cuboC'],
-    'cuboC': ['cuboD', 'cuboG'],
-    'cuboD': ['cuboB', 'cuboD'],
-    'cuboG': ['cuboC', 'cuboH'],
-    'cuboH': ['cuboD', 'cuboF', 'cuboG'],
-    'cuboB': ['cuboD', 'cuboF'],
-    'cuboF': ['cuboB', 'cuboH']
+    'cuboA': [aLockedDestination('cuboC', 'cuboC-unlocked')],
+    'cuboB': [aLockedDestination('cuboD', 'cuboD-unlocked'), aLockedDestination('cuboF', 'cuboF-unlocked')],
+    'cuboC': [aLockedDestination('cuboD', 'cuboD-unlocked'), aLockedDestination('cuboG', 'cuboG-unlocked')],
+    'cuboD': [aLockedDestination('cuboB', 'cuboB-unlocked'), aLockedDestination('cuboC', 'cuboC-unlocked'), aLockedDestination('cuboH', 'cuboH-unlocked')],
+    'cuboE': [],
+    'cuboF': [aLockedDestination('cuboB', 'cuboB-unlocked'), aLockedDestination('cuboH', 'cuboH-unlocked')],
+    'cuboG': [aLockedDestination('cuboC', 'cuboC-unlocked'), aLockedDestination('cuboH', 'cuboH-unlocked')],
+    'cuboH': [aLockedDestination('cuboD', 'cuboD-unlocked'), aLockedDestination('cuboF', 'cuboF-unlocked'), aLockedDestination('cuboG', 'cuboG-unlocked')]
   },
   items: [
     anItem('dice', 'Dado de 6 caras', ['dado', 'dados', 'dado de 6 caras', 'dado de 6 lados'], 'Es un dado de 6 caras', null, isPickable),
@@ -115,11 +118,10 @@ exports.data = {
       aCondDesc('!unlocked:cuboA-llaves-unlocked', '¿Qué llave?'),
       aCondDesc('unlocked:cuboA-llaves-unlocked', 'La llave podría entrar en la cerradura de las cadenas.'),
     ], 'cuboA', isPickable),
-    anItem('cuboA-cadenas', 'Cadenas', ['cadena', 'cadenas', 'grillete', 'grilletes'],
-      [
-          aCondDesc('picked:cuboA-llaves', 'Igual podría usar la llave con las cadenas, ¿no?'),
-          aCondDesc('else', 'Es una cadena robusta anclada a la pared y a tu pierna derecha. El extremo atado a tu pierna tiene una cerradura, crees que podrías abrirla con una llave o unas ganzúas.'),
-      ], 'cuboA', !isPickable),
+    anItem('cuboA-cadenas', 'Cadenas', ['cadena', 'cadenas', 'grillete', 'grilletes'], [
+      aCondDesc('picked:cuboA-llaves', 'Igual podría usar la llave con las cadenas, ¿no?'),
+      aCondDesc('else', 'Es una cadena robusta anclada a la pared y a tu pierna derecha. El extremo atado a tu pierna tiene una cerradura, crees que podrías abrirla con una llave o unas ganzúas.'),
+    ], 'cuboA', !isPickable),
 
       //Cubo B
     anItem('cuboB-crowbar', 'Palanca', ['barra métalica', 'palanca'], 'Es una palanca métalica que me podría servir para defenderme o hacer fuerza en alguna escotilla.', 'cuboB', isPickable),

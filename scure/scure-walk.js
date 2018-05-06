@@ -5,35 +5,68 @@ const getPossibleDestinationsSentence = require('./scure-commons').getPossibleDe
 const getDescription = require('./scure-commons').getDescription;
 
 const scureWalk = (arg, data, scure) => {
-  if (isEmptyArg(arg)) {
+  const availableRoomIds = scure.rooms.getAllDestinationsIds(data.roomId);
+  const unlockedRoomIds = scure.rooms.getUnlockedDestinationsIds(data.roomId, data.unlocked);
+
+  if (isEmptyArg(arg) && !unlockedRoomIds.length) {
+    const noUnlockedPlaceSentence = scure.sentences.get('destination-no-one');
+    return aResponse(noUnlockedPlaceSentence);
+
+  } else if (isEmptyArg(arg) && availableRoomIds.length) {
     return aResponse(getPossibleDestinationsSentence(scure, data));
+
+  } else if (isEmptyArg(arg)) {
+      return aResponse(getPossibleDestinationsSentence(scure, data));
   }
+
   const newRoom = scure.rooms.getRoomByName(arg);
+  if (newRoom) {
+      const isAvailableRoom = availableRoomIds.indexOf(newRoom.id) > -1;
+      if (!isAvailableRoom) {
+          const unreachablePlaceSentence = scure.sentences.get('destination-unreachable', { destination: arg  });
+          return aResponse(`${unreachablePlaceSentence}`);
+      }
+  }
+
+  //const unlockedRoomIds = scure.rooms.getUnlockedDestinationsIds(data.roomId, data.unlocked);
+  if (newRoom && !unlockedRoomIds.length) {
+    const noUnlockedPlaceSentence = scure.sentences.get('destination-no-one');
+    return aResponse(noUnlockedPlaceSentence);
+  }
+
+  //const newRoom = scure.rooms.getRoomByName(arg);
   const isAllowed = scure.rooms.isAllowedDestination(arg, data.roomId, data.unlocked);
   if (!newRoom || !isAllowed) {
-    const destinationsSentence = getPossibleDestinationsSentence(scure, data);
     const unknownPlaceSentence = scure.sentences.get('destination-unknown', { destination: arg  });
-    return aResponse(`${unknownPlaceSentence} ${destinationsSentence}`);
+    let response = `${unknownPlaceSentence}`;
+    if (newRoom && !isAllowed) {
+      const destinationsSentence = getPossibleDestinationsSentence(scure, data);
+      response += ` ${destinationsSentence}`
+    }
+    return aResponse(response);
   }
+
+  const currentRoom = scure.rooms.getRoom(data.roomId);
+
+  //Handle new Room change
   data.roomId = newRoom.id;
 
-  //Se ejecuan los Eventos de texto al entrar y salir
-  /*let response = '';
-  if (hatch.events && hatch.events.before) {
-      response += ` ${hatch.events.before} `;
+  let response = ``;
+  if (currentRoom.events && currentRoom.events.exit) {
+      response += ` ${currentRoom.events.exit}`;
   }
-  response += getDescription(hatch.description, data, scure);
-  if (hatch.events && hatch.events.after) {
-      response += ` ${hatch.events.after} `;
+  response += getDescription(newRoom.description, data, scure);
+  if (newRoom.events && newRoom.events.enter) {
+      response += ` ${newRoom.events.enter}`;
 
       //Se ha abierto la primera Escotilla
       if (!scure.data.firstEverOpenedHatch) {
           scure.data.firstEverOpenedHatch = true;
-          response += ` ${getLeftTimeFrom(scure, data)} `;
+          response += ` ${getLeftTimeFrom(scure, data)}`;
       }
-  }*/
+  }
 
-  return aResponse(getDescription(newRoom.description, data, scure), data);
+  return aResponse(response, data);
 };
 
 exports.scureWalk = scureWalk;

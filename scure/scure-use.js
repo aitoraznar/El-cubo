@@ -120,7 +120,16 @@ const scureUseOneItem = (itemName, data, scure) => {
   data = resolveActions(response, data);
   data = processItemAfterUsage(item, usage, rawResponse, response, data, scure);
   data.usages = scure.usages.increaseUsage(item, data.usages);
-  return aResponse(getSentence(response), data);
+
+  let responseUse = getSentence(response);
+  const isHatch = item.isOpeneable;
+  const isFirstTimeOpened = !scure.usages.isUsed(item.id, data.usages);
+  if (isHatch && isFirstTimeOpened) {
+      const openedCondition = item.description.find(desc => desc.condition.startsWith('opened'));
+      responseUse += ` ${openedCondition.description} `;
+  }
+
+  return aResponse(responseUse, data);
 };
 
 const scureUseTwoItems = (itemName1, itemName2, data, scure) => {
