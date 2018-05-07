@@ -53,7 +53,7 @@ const scureWalk = (arg, data, scure) => {
 
   let response = ``;
   if (currentRoom.events && currentRoom.events.exit) {
-      response += ` ${currentRoom.events.exit}`;
+      response += ` ${currentRoom.events.exit} `;
   }
   response += getDescription(newRoom.description, data, scure);
   if (newRoom.events && newRoom.events.enter) {

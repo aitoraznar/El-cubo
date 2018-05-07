@@ -57,14 +57,15 @@ exports.data = {
     life: 100,
     roomId: 'cuboA',
     inventory: ['dice', 'boots'],
-    picked: ['dice', 'boots']
+    picked: ['dice', 'boots'],
+    unlocked: ['cuboA-unlocked']
   },
   rooms: [
-    aRoom('cuboA', 'Cubo A', ['habitación A', 'estancia A'], 'La habitación tiene forma de cubo y está iluminada de rojo. Tiene 3 escotillas, una arriba, una delante y otra a tu derecha. En el centro de la habitación ves dos cuerdas.', {
+    aRoom('cuboA', 'Cubo A', ['habitación A', 'estancia A', 'cuba'], 'La habitación tiene forma de cubo y está iluminada de rojo. Tiene 3 escotillas, una arriba, una delante y otra a tu derecha. En el centro de la habitación ves dos cuerdas.', {
       'exit': 'Muahahahaha, te mereces todo lo malo que te pase. Estás encerrado debido a las malas acciones que has cometido durante tu vida, solo la redención te dará la libertad. Vigila tus dónde pisas.'
     }),
     aRoom('cuboB', 'Cubo B', ['habitación B', 'estancia B'], 'Cubo 2 descripción. ¿qué haré a continuación?', {}),
-    aRoom('cuboC', 'Cubo C', ['habitación C', 'estancia C'], 'Cubo 3 descripción. ¿qué haré a continuación?', {}),
+    aRoom('cuboC', 'Cubo C', ['habitación C', 'estancia C', 'cuba'], 'Cubo 3 descripción. ¿qué haré a continuación?', {}),
     aRoom('cuboD', 'Cubo D', ['habitación D', 'estancia D'], [
       aCondDesc('!picked:comedor-cartera', 'No he cogido... Cubo 2 descripción. ¿qué haré a continuación?'),
       aCondDesc('default', 'Cubo 4 descripción. ¿qué haré a continuación?'),
@@ -77,7 +78,7 @@ exports.data = {
   map: {
     'cuboA': [aLockedDestination('cuboC', 'cuboC-unlocked')],
     'cuboB': [aLockedDestination('cuboD', 'cuboD-unlocked'), aLockedDestination('cuboF', 'cuboF-unlocked')],
-    'cuboC': [aLockedDestination('cuboD', 'cuboD-unlocked'), aLockedDestination('cuboG', 'cuboG-unlocked')],
+    'cuboC': ['cuboA', aLockedDestination('cuboD', 'cuboD-unlocked'), aLockedDestination('cuboG', 'cuboG-unlocked')],
     'cuboD': [aLockedDestination('cuboB', 'cuboB-unlocked'), aLockedDestination('cuboC', 'cuboC-unlocked'), aLockedDestination('cuboH', 'cuboH-unlocked')],
     'cuboE': [],
     'cuboF': [aLockedDestination('cuboB', 'cuboB-unlocked'), aLockedDestination('cuboH', 'cuboH-unlocked')],
@@ -87,6 +88,14 @@ exports.data = {
   items: [
     anItem('dice', 'Dado de 6 caras', ['dado', 'dados', 'dado de 6 caras', 'dado de 6 lados'], 'Es un dado de 6 caras', null, isPickable),
     anItem('boots', 'Botas', ['botas', 'zapatos', 'calzado'], 'Son unas botas de marca Coronel Tapioca de cuero marrón.', null, isPickable),
+    anItem('cuboA-escotillas', 'Escotillas', ['escotillas'], 'Son 6 escotillas, están situadas justo en el centro del lateral. Paracen como de un submarino, el tamaño es como para que solo una persona a la vez pueda entrar por ella y hay una escalera incrustada en la pared que te permite acceder a ella. Tiene un accionador circular en el centro que supones que es para abrirla.', 'cuboA', !isPickable),
+    anItem('cuboB-escotillas', 'Escotillas', ['escotillas'], 'Son 6 escotillas, están situadas justo en el centro del lateral. Paracen como de un submarino, el tamaño es como para que solo una persona a la vez pueda entrar por ella y hay una escalera incrustada en la pared que te permite acceder a ella. Tiene un accionador circular en el centro que supones que es para abrirla.', 'cuboB', !isPickable),
+    anItem('cuboC-escotillas', 'Escotillas', ['escotillas'], 'Son 6 escotillas, están situadas justo en el centro del lateral. Paracen como de un submarino, el tamaño es como para que solo una persona a la vez pueda entrar por ella y hay una escalera incrustada en la pared que te permite acceder a ella. Tiene un accionador circular en el centro que supones que es para abrirla.', 'cuboC', !isPickable),
+    anItem('cuboD-escotillas', 'Escotillas', ['escotillas'], 'Son 6 escotillas, están situadas justo en el centro del lateral. Paracen como de un submarino, el tamaño es como para que solo una persona a la vez pueda entrar por ella y hay una escalera incrustada en la pared que te permite acceder a ella. Tiene un accionador circular en el centro que supones que es para abrirla.', 'cuboD', !isPickable),
+    anItem('cuboE-escotillas', 'Escotillas', ['escotillas'], 'Son 6 escotillas, están situadas justo en el centro del lateral. Paracen como de un submarino, el tamaño es como para que solo una persona a la vez pueda entrar por ella y hay una escalera incrustada en la pared que te permite acceder a ella. Tiene un accionador circular en el centro que supones que es para abrirla.', 'cuboE', !isPickable),
+    anItem('cuboF-escotillas', 'Escotillas', ['escotillas'], 'Son 6 escotillas, están situadas justo en el centro del lateral. Paracen como de un submarino, el tamaño es como para que solo una persona a la vez pueda entrar por ella y hay una escalera incrustada en la pared que te permite acceder a ella. Tiene un accionador circular en el centro que supones que es para abrirla.', 'cuboF', !isPickable),
+    anItem('cuboG-escotillas', 'Escotillas', ['escotillas'], 'Son 6 escotillas, están situadas justo en el centro del lateral. Paracen como de un submarino, el tamaño es como para que solo una persona a la vez pueda entrar por ella y hay una escalera incrustada en la pared que te permite acceder a ella. Tiene un accionador circular en el centro que supones que es para abrirla.', 'cuboG', !isPickable),
+    anItem('cuboH-escotillas', 'Escotillas', ['escotillas'], 'Son 6 escotillas, están situadas justo en el centro del lateral. Paracen como de un submarino, el tamaño es como para que solo una persona a la vez pueda entrar por ella y hay una escalera incrustada en la pared que te permite acceder a ella. Tiene un accionador circular en el centro que supones que es para abrirla.', 'cuboH', !isPickable),
 
       //Cubo A
     anItem('cuboA-escotilla-superior', 'Escotilla superior', ['escotilla superior', 'escotilla de arriba', 'escotilla del tejado', 'escotilla del techo'], [
@@ -109,7 +118,6 @@ exports.data = {
     anItem('cuboA-escotilla-trasera', 'Escotilla trasera', ['escotilla trasera', 'escotilla de atrás'], 'Es la escotilla trasera.',
       'cuboA', !isPickable, isOpeneable),
 
-    anItem('cuboA-escotillas', 'Escotillas', ['escotillas'], 'Son tres escotillas, están situadas justo en el centro del lateral. Paracen como de un submarino, el tamaño es como para que solo una persona a la vez pueda entrar por ella y hay una escalera incrustada en la pared que te permite acceder a ella. Tiene un accionador circular en el centro que supones que es para abrirla.', 'cuboA', !isPickable),
     anItem('cuboA-cuerdas', 'Cuerdas', ['cuerdas', 'las cuerdas'], 'Ves dos cuerdas, una la izquierda y otra a la derecha que se dirigen hasta la esquina opuesta a la tuya. Ves que las cuerdas están a tu alcance.', 'cuboA', !isPickable),
     anItem('cuboA-cuerda-izq', 'Cuerda izquierda', ['cuerda izquierda', 'cuerda de la izquierda', 'cordón izquierdo'], 'Ves que la cuerda va hasta el fondo y sube por la pared a través de guías, continúa por el techo y termina casi encima de ti. Aprecias que tiene algo brillante en el extremo pero no llegas a saber qué es. Podrías tirar de la cuerda, ¿tiras de ella?', 'cuboA', !isPickable),
     anItem('cuboA-cuerda-dcha', 'Cuerda derecha', ['cuerda derecha', 'cuerda de la derecha', 'cordón derecha'], 'Ves que la cuerda va hasta el fondo y sube por la pared a través de guías, continúa por el techo y se desvía ligeramente hacia la derecha acabando en una esquina del techo, cuelga una caja pequeña cuyo contenido no llegas a ver. Podrías tirar de la cuerda, ¿tiras de ella?', 'cuboA', !isPickable),
