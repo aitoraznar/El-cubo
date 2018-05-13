@@ -121,6 +121,14 @@ exports.data = {
     anItem('cuboA-cuerdas', 'Cuerdas', ['cuerdas', 'las cuerdas'], 'Ves dos cuerdas, una la izquierda y otra a la derecha que se dirigen hasta la esquina opuesta a la tuya. Ves que las cuerdas están a tu alcance.', 'cuboA', !isPickable),
     anItem('cuboA-cuerda-izq', 'Cuerda izquierda', ['cuerda izquierda', 'cuerda de la izquierda', 'cordón izquierdo'], 'Ves que la cuerda va hasta el fondo y sube por la pared a través de guías, continúa por el techo y termina casi encima de ti. Aprecias que tiene algo brillante en el extremo pero no llegas a saber qué es. Podrías tirar de la cuerda, ¿tiras de ella?', 'cuboA', !isPickable),
     anItem('cuboA-cuerda-dcha', 'Cuerda derecha', ['cuerda derecha', 'cuerda de la derecha', 'cordón derecha'], 'Ves que la cuerda va hasta el fondo y sube por la pared a través de guías, continúa por el techo y se desvía ligeramente hacia la derecha acabando en una esquina del techo, cuelga una caja pequeña cuyo contenido no llegas a ver. Podrías tirar de la cuerda, ¿tiras de ella?', 'cuboA', !isPickable),
+    anItem('cuboA-objeto-brillante', 'Objeto brillante', ['algo brillante', 'objeto brillante', 'cosa brillante'], [
+        aCondDesc('!unlocked:cuboA-objeto-brillante-unlocked', '¿Qué objeto brillante?'),
+        aCondDesc('unlocked:cuboA-objeto-brillante-unlocked', 'Es un objeto no muy grande, te cabría en la mano, es de un brillante color metálico rojizo. No llegas a discernir qué es.'),
+    ], 'cuboA', !isPickable),
+    anItem('cuboA-pequena-caja', 'caja pequeña', ['caja pequeña', 'caja colgante', 'caja que cuelga'], [
+          aCondDesc('!unlocked:cuboA-pequena-caja-unlocked', '¿Qué caja colgante?'),
+        aCondDesc('unlocked:cuboA-pequena-caja-unlocked', 'Es una caja de un tamaño pequeño, parece una caja de madera. Aprecias que se mueve un poco.'),
+    ], 'cuboA', !isPickable),
     anItem('cuboA-llaves', 'Llave de cadenas', ['llave', 'llaves'], [
       aCondDesc('!unlocked:cuboA-llaves-unlocked', '¿Qué llave?'),
       aCondDesc('unlocked:cuboA-llaves-unlocked', 'La llave podría entrar en la cerradura de las cadenas.'),
