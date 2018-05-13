@@ -62,7 +62,7 @@ describe('El Cubo - when walking', () => {
 
   const TEST_DATA = [
     { room: 'cuboA', destinations: 'Cubo C', unlocked: ['cuboC-unlocked'] },
-    { room: 'cuboC', destinations: 'Cubo D y Cubo G', unlocked: ['cuboD-unlocked', 'cuboG-unlocked'] },
+    { room: 'cuboC', destinations: 'Cubo A, Cubo D y Cubo G', unlocked: ['cuboD-unlocked', 'cuboG-unlocked'] },
   ];
 
   TEST_DATA.forEach((data) => {
