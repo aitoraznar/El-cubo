@@ -180,6 +180,51 @@ class ScureRooms {
   }
 }
 
+class ScureEnemies {
+    constructor(data) {
+        this.data = data;
+    }
+
+    getEnemy(id) {
+        return this.data.enemies.find(i => i.id === id);
+    }
+
+    getEnemyByName(name) {
+        if (isEmptyArg(name)) return null;
+        return this.data.enemies.find(i => isTextEqual(i.name, name) || isSynonym(i.synonyms, name));
+    }
+
+    getEnemyByNameAndRoom(name, roomId) {
+        if (isEmptyArg(name)) return null;
+        return this.data.enemies.find(i =>
+        (isTextEqual(i.name, name) || isSynonym(i.synonyms, name))
+        && (i.location === roomId));
+    }
+
+    getEnemiesByRoom(roomId) {
+        if (isEmptyArg(roomId)) return null;
+        return this.data.enemies.find(i => i.location === roomId);
+    }
+
+    isDead(enemyId, deadList) {
+        if (!enemyId) return true;
+        if (!this.getEnemy(enemyId)) return false;
+        deadList = deadList || [];
+        if (typeof deadList.length !== 'number') return false;
+        return deadList.indexOf(enemyId) >= 0;
+    }
+
+    hit(enemy, weapon, deadList) {
+        if (!(enemy && weapon)) return false;
+        enemy.life -= weapon.damage;
+        if (enemy.life <= 0) {
+          deadList = deadList || [];
+          deadList.push(enemy.id);
+        }
+        return true;
+    }
+}
+
 class Scure {
   constructor(data) {
     this.data = data;
@@ -187,6 +232,7 @@ class Scure {
     this.items = new ScureItems(data);
     this.rooms = new ScureRooms(data);
     this.usages = new ScureUsages(data);
+    this.enemies = new ScureEnemies(data);
   }
 
   getInit() {

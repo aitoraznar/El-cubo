@@ -3,9 +3,10 @@ const overwriteDataFrom = require('../lib/common').overwriteDataFrom;
 const scureHit = require('../scure/scure-hit').scureHit;
 
 const hit = scure => (app) => {
-  const itemName = getArgument(app, 'arg');
+  const weapon = getArgument(app, 'weapon');
+  const target = getArgument(app, 'target');
 
-  const scureResponse = scureHit(itemName, app.data, scure);
+  const scureResponse = scureHit(weapon, target, app.data, scure);
 
   overwriteDataFrom(scureResponse, app);
   app.ask(scureResponse.sentence);

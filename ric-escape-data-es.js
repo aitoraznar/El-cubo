@@ -1,7 +1,7 @@
 const aRoom = (id, name, synonyms, description, events) =>
   ({ id, name, synonyms, description, events });
-const anItem = (id, name, synonyms, description, location, pickable, isOpeneable, pickingResponse) =>
-  ({ id, name, synonyms, description, location, pickable, isOpeneable, pickingResponse });
+const anItem = (id, name, synonyms, description, location, pickable, pickingResponse, isWeapon, damage) =>
+  ({ id, name, synonyms, description, location, pickable, pickingResponse, isWeapon, damage });
 const anUsage = (items, response, onlyOnce) =>
   ({ items, response, onlyOnce });
 const anUnlockingAction = (response, lock) => ({ isUnlockingAction: true, response, lock });
@@ -11,11 +11,14 @@ const aLockedDestination = (roomId, lock) => ({ isLockedDestination: true, roomI
 const aCondDesc = (condition, description) => ({ conditional: true, condition, description });
 const aCondDescUsage = (consumesObjects, condition, description) =>
   ({ conditional: true, consumesObjects, condition, description });
+const aEnemy = (id, name, synonyms, description, location, life, damage, canMove, onlyAttackOnce) =>
+    ({ id, name, synonyms, description, location, life, damage, canMove, onlyAttackOnce });
 const theEndingScene = description => ({ isEndingScene: true, description });
 const isPickable = true;
 const useOnlyOnce = true;
 const consumesTheObjects = true;
 const isOpeneable = true;
+const isWeapon = true;
 
 exports.data = {
   sentences: {
@@ -52,6 +55,11 @@ exports.data = {
     'end-timeover': 'Se te ha acabado el tiempo, hora de morir. BOOOOOOOOOOOM',
     'changed-language': 'Ok, a partir de ahora hablaré en {lang}. ¿Qué quieres que haga?',
     'changed-language-unknown': 'No sé hablar el idioma {lang}. Solo sé hablar inglés y español. ¿Qué quieres hacer?',
+    'no-target-to-attack': 'No hay nada a lo que golpear...',
+    'cant-attack-to-target': 'No puedo golpear a {enemy}',
+    'cant-attack-dead-target': 'No puedo goldearlo si ya está muerto',
+    'hit-target': 'Alcanzas a {target} con {weapon}, le quitas {points} de vida.',
+    'hit-target-dead': 'Tras golpear {target} con {weapon}, lo derrotas.',
   },
   init: {
     life: 100,
@@ -86,16 +94,17 @@ exports.data = {
     'cuboH': [aLockedDestination('cuboD', 'cuboD-unlocked'), aLockedDestination('cuboF', 'cuboF-unlocked'), aLockedDestination('cuboG', 'cuboG-unlocked')]
   },
   items: [
-    anItem('dice', 'Dado de 6 caras', ['dado', 'dados', 'dado de 6 caras', 'dado de 6 lados'], 'Es un dado de 6 caras', null, isPickable),
-    anItem('boots', 'Botas', ['botas', 'zapatos', 'calzado'], 'Son unas botas de marca Coronel Tapioca de cuero marrón.', null, isPickable),
-    anItem('cuboA-escotillas', 'Escotillas', ['escotillas'], 'Son 6 escotillas, están situadas justo en el centro del lateral. Paracen como de un submarino, el tamaño es como para que solo una persona a la vez pueda entrar por ella y hay una escalera incrustada en la pared que te permite acceder a ella. Tiene un accionador circular en el centro que supones que es para abrirla.', 'cuboA', !isPickable),
-    anItem('cuboB-escotillas', 'Escotillas', ['escotillas'], 'Son 6 escotillas, están situadas justo en el centro del lateral. Paracen como de un submarino, el tamaño es como para que solo una persona a la vez pueda entrar por ella y hay una escalera incrustada en la pared que te permite acceder a ella. Tiene un accionador circular en el centro que supones que es para abrirla.', 'cuboB', !isPickable),
-    anItem('cuboC-escotillas', 'Escotillas', ['escotillas'], 'Son 6 escotillas, están situadas justo en el centro del lateral. Paracen como de un submarino, el tamaño es como para que solo una persona a la vez pueda entrar por ella y hay una escalera incrustada en la pared que te permite acceder a ella. Tiene un accionador circular en el centro que supones que es para abrirla.', 'cuboC', !isPickable),
-    anItem('cuboD-escotillas', 'Escotillas', ['escotillas'], 'Son 6 escotillas, están situadas justo en el centro del lateral. Paracen como de un submarino, el tamaño es como para que solo una persona a la vez pueda entrar por ella y hay una escalera incrustada en la pared que te permite acceder a ella. Tiene un accionador circular en el centro que supones que es para abrirla.', 'cuboD', !isPickable),
-    anItem('cuboE-escotillas', 'Escotillas', ['escotillas'], 'Son 6 escotillas, están situadas justo en el centro del lateral. Paracen como de un submarino, el tamaño es como para que solo una persona a la vez pueda entrar por ella y hay una escalera incrustada en la pared que te permite acceder a ella. Tiene un accionador circular en el centro que supones que es para abrirla.', 'cuboE', !isPickable),
-    anItem('cuboF-escotillas', 'Escotillas', ['escotillas'], 'Son 6 escotillas, están situadas justo en el centro del lateral. Paracen como de un submarino, el tamaño es como para que solo una persona a la vez pueda entrar por ella y hay una escalera incrustada en la pared que te permite acceder a ella. Tiene un accionador circular en el centro que supones que es para abrirla.', 'cuboF', !isPickable),
-    anItem('cuboG-escotillas', 'Escotillas', ['escotillas'], 'Son 6 escotillas, están situadas justo en el centro del lateral. Paracen como de un submarino, el tamaño es como para que solo una persona a la vez pueda entrar por ella y hay una escalera incrustada en la pared que te permite acceder a ella. Tiene un accionador circular en el centro que supones que es para abrirla.', 'cuboG', !isPickable),
-    anItem('cuboH-escotillas', 'Escotillas', ['escotillas'], 'Son 6 escotillas, están situadas justo en el centro del lateral. Paracen como de un submarino, el tamaño es como para que solo una persona a la vez pueda entrar por ella y hay una escalera incrustada en la pared que te permite acceder a ella. Tiene un accionador circular en el centro que supones que es para abrirla.', 'cuboH', !isPickable),
+    anItem('fist', 'Puño', ['puño', 'puños', 'manos'], 'Son mis manos curtidas', 'cuboA', !isPickable, null, isWeapon, 10),
+    anItem('dice', 'Dado de 6 caras', ['dado', 'dados', 'dado de 6 caras', 'dado de 6 lados'], 'Es un dado de 6 caras, color blanco y negro.', null, isPickable),
+    anItem('boots', 'Botas', ['botas', 'zapatos', 'calzado'], 'Son las botas de marca Coronel Tapioca de cuero marrón wue llevo puestas.', null, isPickable),
+    anItem('cuboA-escotillas', 'Escotillas', ['escotillas'], 'Son 6 escotillas, están situadas justo en el centro del lateral. Parecen como de un submarino, el tamaño es como para que solo una persona a la vez pueda entrar por ella y hay una escalera incrustada en la pared que te permite acceder a ella. Tiene un accionador circular en el centro que supones que es para abrirla.', 'cuboA', !isPickable),
+    anItem('cuboB-escotillas', 'Escotillas', ['escotillas'], 'Son 6 escotillas, están situadas justo en el centro del lateral. Parecen como de un submarino, el tamaño es como para que solo una persona a la vez pueda entrar por ella y hay una escalera incrustada en la pared que te permite acceder a ella. Tiene un accionador circular en el centro que supones que es para abrirla.', 'cuboB', !isPickable),
+    anItem('cuboC-escotillas', 'Escotillas', ['escotillas'], 'Son 6 escotillas, están situadas justo en el centro del lateral. Parecen como de un submarino, el tamaño es como para que solo una persona a la vez pueda entrar por ella y hay una escalera incrustada en la pared que te permite acceder a ella. Tiene un accionador circular en el centro que supones que es para abrirla.', 'cuboC', !isPickable),
+    anItem('cuboD-escotillas', 'Escotillas', ['escotillas'], 'Son 6 escotillas, están situadas justo en el centro del lateral. Parecen como de un submarino, el tamaño es como para que solo una persona a la vez pueda entrar por ella y hay una escalera incrustada en la pared que te permite acceder a ella. Tiene un accionador circular en el centro que supones que es para abrirla.', 'cuboD', !isPickable),
+    anItem('cuboE-escotillas', 'Escotillas', ['escotillas'], 'Son 6 escotillas, están situadas justo en el centro del lateral. Parecen como de un submarino, el tamaño es como para que solo una persona a la vez pueda entrar por ella y hay una escalera incrustada en la pared que te permite acceder a ella. Tiene un accionador circular en el centro que supones que es para abrirla.', 'cuboE', !isPickable),
+    anItem('cuboF-escotillas', 'Escotillas', ['escotillas'], 'Son 6 escotillas, están situadas justo en el centro del lateral. Parecen como de un submarino, el tamaño es como para que solo una persona a la vez pueda entrar por ella y hay una escalera incrustada en la pared que te permite acceder a ella. Tiene un accionador circular en el centro que supones que es para abrirla.', 'cuboF', !isPickable),
+    anItem('cuboG-escotillas', 'Escotillas', ['escotillas'], 'Son 6 escotillas, están situadas justo en el centro del lateral. Parecen como de un submarino, el tamaño es como para que solo una persona a la vez pueda entrar por ella y hay una escalera incrustada en la pared que te permite acceder a ella. Tiene un accionador circular en el centro que supones que es para abrirla.', 'cuboG', !isPickable),
+    anItem('cuboH-escotillas', 'Escotillas', ['escotillas'], 'Son 6 escotillas, están situadas justo en el centro del lateral. Parecen como de un submarino, el tamaño es como para que solo una persona a la vez pueda entrar por ella y hay una escalera incrustada en la pared que te permite acceder a ella. Tiene un accionador circular en el centro que supones que es para abrirla.', 'cuboH', !isPickable),
 
       //Cubo A
     anItem('cuboA-escotilla-superior', 'Escotilla superior', ['escotilla superior', 'escotilla de arriba', 'escotilla del tejado', 'escotilla del techo'], [
@@ -126,7 +135,7 @@ exports.data = {
         aCondDesc('unlocked:cuboA-objeto-brillante-unlocked', 'Es un objeto no muy grande, te cabría en la mano, es de un brillante color metálico rojizo. No llegas a discernir qué es.'),
     ], 'cuboA', !isPickable),
     anItem('cuboA-pequena-caja', 'caja pequeña', ['caja pequeña', 'caja colgante', 'caja que cuelga'], [
-          aCondDesc('!unlocked:cuboA-pequena-caja-unlocked', '¿Qué caja colgante?'),
+        aCondDesc('!unlocked:cuboA-pequena-caja-unlocked', '¿Qué caja colgante?'),
         aCondDesc('unlocked:cuboA-pequena-caja-unlocked', 'Es una caja de un tamaño pequeño, parece una caja de madera. Aprecias que se mueve un poco.'),
     ], 'cuboA', !isPickable),
     anItem('cuboA-llaves', 'Llave de cadenas', ['llave', 'llaves'], [
@@ -137,9 +146,14 @@ exports.data = {
       aCondDesc('picked:cuboA-llaves', 'Igual podría usar la llave con las cadenas, ¿no?'),
       aCondDesc('else', 'Es una cadena robusta anclada a la pared y a tu pierna derecha. El extremo atado a tu pierna tiene una cerradura, crees que podrías abrirla con una llave o unas ganzúas.'),
     ], 'cuboA', !isPickable),
+    anItem('cuboA-rat', 'Rata', ['ratón', 'rata de cloaca', 'sagutxu'], [
+        aCondDesc('!unlocked:cuboA-rata-unlocked', '¿Qué rata?'),
+        aCondDesc('unlocked:cuboA-rata-muerta-unlocked', 'La jodida rata está muerta por fin.'),
+        aCondDesc('unlocked:cuboA-rata-unlocked', '¡Es una mugrosa rata que me está mordiendo!'),
+    ], 'cuboA', isPickable),
 
       //Cubo B
-    anItem('cuboB-crowbar', 'Palanca', ['barra métalica', 'palanca'], 'Es una palanca métalica que me podría servir para defenderme o hacer fuerza en alguna escotilla.', 'cuboB', isPickable),
+    anItem('cuboB-crowbar', 'Palanca', ['barra métalica', 'palanca'], 'Es una palanca métalica que me podría servir para defenderme o hacer fuerza en alguna escotilla.', 'cuboB', isPickable, null, isWeapon, 20),
 
       //CuboC
     anItem('cuboC-escotilla-superior', 'Escotilla superior', ['escotilla delantera', 'escotilla de enfrente', 'escotilla de delante'], 'Es la escotilla superior.',
@@ -154,8 +168,6 @@ exports.data = {
       'cuboC', !isPickable, isOpeneable),
     anItem('cuboC-escotilla-trasera', 'Escotilla trasera', ['escotilla trasera', 'escotilla de atrás'], 'Es la escotilla trasera.',
       'cuboC', !isPickable, isOpeneable),
-
-
   ],
   usages: [
     anUsage('dice', [
@@ -209,84 +221,9 @@ exports.data = {
     ], !useOnlyOnce),
     anUsage('cuboC-escotilla-trasera', ['Esta escotilla está bloqueada, no se puede abrir.'], !useOnlyOnce),
 
-
-
-    anUsage('comedor-cartera', [
-      aPickingAction('Veo que dentro de la cartera hay un papel, en el que está escrito la combinación 4815. Vaya seguridad, ¿guardando números secretos en la cartera? Bueno, me lo llevo por si es de utilidad. ¿Qué hago?', 'combinacion-4815'),
-    ], true),
-    anUsage(['combinacion-4815', 'hab108-cajafuerte'], [
-      aPickingAction('Clic. Sí, la caja se ha abierto. Hay un aparato extraño dentro de la caja fuerte. Me lo llevo. ¿Qué hago?', 'hab108-aparato'),
-    ], true),
-    anUsage('sala-mandos-ordenador', [
-      aConditionalResponse([
-        aCondDescUsage(false, '!unlocked:ricmodified', 'No puedo alterar el curso de navegación del ordenador. Mi programación no me deja hacerlo, ya que la única forma de salvar la humanidad es estrellarnos y morir. ¿Qué hago?'),
-        aCondDescUsage(false, '!unlocked:humanitysaved', theEndingScene('Ok, he alterado el curso de navegación, ya no os estrellaréis. Todo termina aquí. Felicidades, has conseguido salvarte, pero no has salvado a la humanidad. Podías haber hecho algo diferente para llegar a este punto. Pero no, has preferido salvarte tú. Lo siento, pero tú y tu raza estáis abocados a la extinción. Adiós.')),
-        aCondDescUsage(false, 'unlocked:humanitysaved', theEndingScene('He alterado el curso de navegación, ya no os estrellaréis. Y además, la humanidad está salvada, ya que el patógeno está muerto por efecto del betacaroteno. ¡Enhorabuena! Has hecho un trabajo excelente. Hasta la próxima.')),
-      ]),
-    ], false),
-    anUsage(['ric', 'sala-mandos-ordenador'], [
-      aConditionalResponse([
-        aCondDescUsage(false, '!unlocked:ricmodified', 'No puedo alterar el curso de navegación del ordenador. Mi programación no me deja hacerlo, ya que la única forma de salvar la humanidad es estrellarnos y morir. ¿Qué hago?'),
-        aCondDescUsage(false, '!unlocked:humanitysaved', theEndingScene('Ok, he alterado el curso de navegación, ya no os estrellaréis. Todo termina aquí. Felicidades, has conseguido salvarte, pero no has salvado a la humanidad. Podías haber hecho algo diferente para llegar a este punto. Pero no, has preferido salvarte tú. Lo siento, pero tú y tu raza estáis abocados a la extinción. Adiós.')),
-        aCondDescUsage(false, 'unlocked:humanitysaved', theEndingScene('He alterado el curso de navegación, ya no os estrellaréis. Y además, la humanidad está salvada, ya que el patógeno está muerto por efecto del betacaroteno. ¡Enhorabuena! Has hecho un trabajo excelente. Hasta la próxima.')),
-      ]),
-    ], false),
-    anUsage('biblio-libroric', [
-      aPickingAction('Entre otras muchas cosas, dice que para reprogramar un robot RIC se debe usar el código 1893. Me apunto "Código 1893" en mi inventario. ¿Qué hago?', 'codigo-1893'),
-    ], true),
-    anUsage(['ric', 'codigo-1893'], [
-      aConditionalResponse([
-        aCondDescUsage(false, '!unlocked:ricpending', 'Antes de introducir el código se debe utilizar un aparato para ello. ¿Qué hago?'),
-        aCondDescUsage(true, 'unlocked:ricpending', anUnlockingAction('Oh, ¿Quieres que use este aparato conmigo mismo? Si lo haces perderé toda mi memoria... Bip. Bip. Vale. Entiende que lo que hice fue por el bien de la humanidad. Todos los humanos de esta nave lleváis un virus altamente contagioso que, si volvéis a vuestro planeta, extinguiréis la raza humana. Por favor, vuelve a dormirte. Vale, ejecutando instrucción de reseteo. 3, 2, 1. Hola, soy RIC, reestablecido a mis valores de fábrica. ¿Qué quieres que haga?', 'ricmodified')),
-      ]),
-    ], false),
-    anUsage(['ric', 'hab108-aparato'], [
-      anUnlockingAction('Ok, utilizado. Ahora mi interfaz pide un código. ¿No estarás haciendo lo que creo que estás haciendo, verdad? ¿Qué quieres que haga?', 'ricpending'),
-    ], true),
-    anUsage('hab108-diario', [
-      'Son las primeras páginas de tu diario. Hablas de lo ilusionante que es este viaje, de llegar osadamente a lugares donde ninguna otra persona ha llegado antes. ¿Qué hago?',
-      'En las siguientes páginas hablas del planeta extraño al que llegamos. Indicas cómo alguien de la tripulación se infectó de un extraño virus. El virus rápidamente se contagió al resto de la tripulación. ¿Qué más hago?',
-      'Las siguientes páginas hablan de lo preocupado que estabas porque dicho virus llegara a la tierra. Un momento de desesperación finalmente te lleva a escribir tus últimas páginas. ¿Qué más hago?',
-      'Te las leo literalmente: "No creo que haya cura, lo he intentado pero no puedo más, ya no hay tiempo. Mi mente se revela. He decidido que es mejor que muramos. He programado a RIC para que dirija la nave hacia la estrella más cercana.". Es muy duro, ¿quieres que siga leyendo? ¿Qué más hago?',
-      'Durante la pasada noche, he gaseado a la tripulación con el Gasotrón del comedor. Yo dormiré esta noche. Estas son mis últimas palabras. En un par de días, moriremos. Será lo mejor para salvar la humanidad. ¿Qué más hago?',
-      aConditionalResponse([
-        aCondDescUsage(false, '!picked:hab108-librarykey', aPickingAction('En las últimas páginas hay una llave con el siguiente mensaje: "Lexus nos ha traido la muerte, así encierro yo esta muerte". Recojo la llave. ¿Qué más hago?', 'hab108-librarykey')),
-        aCondDescUsage(false, 'else', 'No hay nada más escrito a excepción de "Lexus nos ha traido la muerte, así encierro yo esta muerte". ¿Qué más hago?'),
-      ]),
-    ], false),
-    anUsage('hab108-librarykey', [
-      '¿Con qué quieres usar la llave? Di Usar llave con objeto',
-    ], false),
-    anUsage(['hab108-librarykey', 'biblio-armario'], [
-      anUnlockingAction('Ok, armario abierto. Ya puedo llegar a los libros sobre planetas. ¿Qué más hago?', 'libroplanetas'),
-    ], true),
-    anUsage('biblio-librovenus', [
-      aConditionalResponse([
-        aCondDescUsage(false, '!unlocked:libroplanetas', 'El armario está cerrado. No puedo alcanzar el libro. ¿Qué más hago?'),
-        aCondDescUsage(false, 'unlocked:libroplanetas', '¿Qué poca imaginación no? A ver, Venus es un planeta de masa 0.8 veces que la tierra y bla bla bla. ¿Para qué quieres saber todo esto?'),
-      ]),
-    ], false),
-    anUsage('biblio-librolexus', [
-      aConditionalResponse([
-        aCondDescUsage(false, '!unlocked:libroplanetas', 'El armario está cerrado. No puedo alcanzar el libro. ¿Qué más hago?'),
-        aCondDescUsage(false, 'unlocked:libroplanetas', 'Hay mucha información sobre el planeta, pero quizás esto te interese: Los agentes biológicos del planeta Lexus encuentran altamente tóxicos los alimentos basados en carotenos, como por ejemplo, la zanahoria. ¿Qué más hago?'),
-      ]),
-    ], false),
-    /* anUsage('hab108-cuadro', [
-      'No creo que tenga que USAR el cuadro,
-      pero quizás me lo puedo llevar... ¿Qué hago?',
-    ], false), */
-    anUsage(['hab108-cuadro', 'biblio-librarykey'], [
-      'El cuadro no tiene que abrirse, está suelto. Incluso creo que me lo puedo llevar. ¿Qué hago?',
-    ], false),
-    anUsage(['comedor-gasotron', 'biblio-librarykey'], [
-      'El Gasotrón no necesita ninguna llave para ser usado. Úsalo con una comida específica. ¿Qué hago?',
-    ], false),
-    anUsage(['comedor-gasotron', 'comedor-comida'], [
-      'Hay demasiada comida que puedo usar con el Gasotrón. Especifica exactamente la comida que tengo que usar. ¿Qué más hago?',
-    ], false),
-    anUsage(['comedor-gasotron', 'comedor-zanahoria'], [
-      anUnlockingAction('Introduzco la zanahoria en el gasotrón. Veo que un gas sale del gasotrón y se diluye por la nave. Puedo garantizar que el caroteno de la zanahoria se ha introducido en el organismo de todos los pasajeros, incluyendo en el tuyo. ¡Estáis salvados! Pero no lo celebres, todavía tenemos que desviar esta nave. Dime, rápido, ¿Qué más hago?', 'humanitysaved'),
-    ], true),
   ],
+  enemies: [
+      aEnemy('cuboA-rat', 'Rata', ['ratón', 'rata de cloaca', 'sagutxu'], 'Es una rata de cloaca, con un pelo mugroso y mucha mala baba',
+          'cuboA', 15, 5, true, false),
+  ]
 };

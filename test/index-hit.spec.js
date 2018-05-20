@@ -3,61 +3,88 @@ const elCuboData = require('../ric-escape-data').data['es'];
 const scure = require('../scure/scure').buildScureFor(elCuboData);
 
 
-
 describe('El Cubo - when Hitting', () => {
-    beforeEach = () => {
-        scure.life = 100;
-    };
+  beforeEach = () => {
+    scure.life = 100;
+  };
 
-    it(`Empty weapon when no argument given (no arg)`, () => {
-        const request = aDfaRequest()
-            .withIntent('hit')
-            .withArgs({})
-            .withData({})
-            .build();
+  it(`Can't hit if there is no target`, () => {
+    const request = aDfaRequest()
+      .withIntent('hit')
+      .withArgs({})
+      .withData({})
+      .build();
 
-        elCubo.elCubo(request);
+    elCubo.elCubo(request);
 
-        expect(getDfaApp().lastAsk).to.contains('Tienes que pegarle con un arma');
-    });
-
-  const EMPTY_ARGS = [null, undefined, '', ' ', [], {}];
-  EMPTY_ARGS.forEach((arg) => {
-    it(`Empty weapon when invalid/empty argument given (arg: ${arg})`, () => {
-      const request = aDfaRequest()
-        .withIntent('hit')
-        .withArgs({ arg })
-        .withData({})
-        .build();
-
-        elCubo.elCubo(request);
-
-      expect(getDfaApp().lastAsk).to.contains('Tienes que pegarle con un arma');
-    });
+    expect(getDfaApp().lastAsk).to.contains('No hay nada a lo que golpear');
   });
 
-  const WEAPONS_LIST = ['cuchillo', 'apuñalar',
-      'pistola', 'pipa',
-      'bate', 'barra metálica',
-      'metralleta', 'uzi', 'semiautomatica',
-      'puño', 'puñetazo', 'hostión'];
+  it(`Can't hit if there is no existing target`, () => {
+    const request = aDfaRequest()
+      .withIntent('hit')
+      .withArgs({ target: 'pikolo' })
+      .withData({})
+      .build();
 
-  WEAPONS_LIST.forEach((arg) => {
-      scure.life = 100;
+    elCubo.elCubo(request);
 
-      it(`Hit wit the weapon and reduce target's life (arg: ${arg})`, () => {
-          const request = aDfaRequest()
-              .withIntent('hit')
-              .withArgs({ arg })
-              .withData({})
-              .build();
+    expect(getDfaApp().lastAsk).to.contains(`No puedo golpear a pikolo`);
+  });
 
-          elCubo.elCubo(request);
+  it(`Can't hit if it's dead`, () => {
+    const request = aDfaRequest()
+      .withIntent('hit')
+      .withArgs({ target: 'rata' })
+      .withData({ deadList: ['cuboA-rat']})
+      .build();
 
-          expect(getDfaApp().lastAsk).to.contains('quitado');
-          expect(getDfaApp().lastAsk).to.contains('puntos de vida');
-          expect(getDfaApp().lastAsk).to.not.contains('Tienes que pegarle con un arma');
-      });
+    elCubo.elCubo(request);
+
+    expect(getDfaApp().lastAsk).to.contains(`No puedo goldearlo si ya está muerto`);
+  });
+
+  it(`Use hands if no weapon provided`, () => {
+    const request = aDfaRequest()
+      .withIntent('hit')
+      .withArgs({ target: 'rata' })
+      .withData({})
+      .build();
+
+    elCubo.elCubo(request);
+
+    expect(getDfaApp().lastAsk).to.contains('Puño');
+  });
+
+  it(`Use hands if invalid weapon provided`, () => {
+    let enemy = scure.enemies.getEnemyByName('rata');
+    enemy.life = 15;
+
+    const request = aDfaRequest()
+      .withIntent('hit')
+      .withArgs({ weapon: 'mandanga', target: 'rata' })
+      .withData({})
+      .build();
+
+    elCubo.elCubo(request);
+
+    expect(getDfaApp().lastAsk).to.contains('Puño');
+    expect(getDfaApp().lastAsk).to.contains('le quitas');
+  });
+
+  it(`Hit with weapong to a target to death`, () => {
+    let enemy = scure.enemies.getEnemyByName('rata');
+    enemy.life = 15;
+
+    const request = aDfaRequest()
+      .withIntent('hit')
+      .withArgs({ weapon: 'palanca', target: 'rata' })
+      .withData({})
+      .build();
+
+    elCubo.elCubo(request);
+
+    expect(getDfaApp().lastAsk).to.contains('lo derrotas');
   });
 
 });

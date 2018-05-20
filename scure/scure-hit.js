@@ -1,31 +1,49 @@
 const isEmptyArg = require('../lib/common').isEmptyArg;
 const aResponse = require('./scure-response').aResponse;
 
-
-let weapons = {
-  'cuchillo': 15, 'apuñalar': 15,
-    'pistola': 25, 'pipa': 25,
-    'bate': 10, 'barra metálica': 10, 'palo': 10, 'palanca': 10,
-    'metralleta': 50, 'uzi': 50, 'semiautomatica': 50,
-    'puño': 5, 'puñetazo': 5, 'hostión': 5
-};
-
-const scureHit = (arg, data, scure) => {
-  let weaponSelected = weapons[arg];
-
-  if (isEmptyArg(arg) || !weaponSelected) {
-    return aResponse('Tienes que pegarle con un arma...', data);
+let lastAttack;
+const scureHit = (weaponName, targetName, data, scure) => {
+  console.log('[scureHit]', `weaponName: ${weaponName} - targetName: ${targetName}`);
+  if (isEmptyArg(targetName)) {
+    return aResponse(scure.sentences.get('no-target-to-attack'), data);
   }
 
-  if (data.life > 0 && data.life > weaponSelected) {
-      data.life -= weaponSelected;
-  } else {
-      let result = `Muerto`;
-      return aResponse(result, data);
+  //, data.roomId
+  let enemy = scure.enemies.getEnemyByName(targetName);
+  if (!enemy) {
+    return aResponse(scure.sentences.get('cant-attack-to-target', {enemy: targetName}), data);
   }
 
-  let result = `Le has quitado ${weaponSelected} de vida con el ${arg}, le queda ${data.life} puntos de vida`;
-  return aResponse(result, data);
+  if (scure.enemies.isDead(enemy.id, data.deadList)) {
+    return aResponse(scure.sentences.get('cant-attack-dead-target'), data);
+  }
+
+  //Use hands if no weapon provided
+  let weapon;
+  if (isEmptyArg(weaponName)) {
+    //Use default weapon
+    weapon = scure.items.getItem('fist');
+  }
+
+  //Use hands if invalid weapon provided
+  weapon = scure.items.getItemByName(weaponName);
+  if (!(weapon && weapon.isWeapon)) {
+    weapon = scure.items.getItem('fist');
+  }
+
+  //Hit
+  scure.enemies.hit(enemy, weapon, data.deadList);
+
+  if (enemy.life <= 0) {
+    let response = scure.sentences.get('hit-target-dead', {target: enemy.name, weapon: weapon.name, points: weapon.damage});
+
+    return aResponse(response);
+  }
+
+  if (enemy.life > 0) {
+    let response = scure.sentences.get('hit-target', {target: enemy.name, weapon: weapon.name, points: weapon.damage});
+    return aResponse(response);
+  }
 };
 
 exports.scureHit = scureHit;
