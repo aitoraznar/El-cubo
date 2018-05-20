@@ -32,6 +32,30 @@ describe('El Cubo - when Hitting', () => {
     expect(getDfaApp().lastAsk).to.contains(`No puedo golpear a pikolo`);
   });
 
+  it(`Can't hit if can't be seen`, () => {
+    const request = aDfaRequest()
+      .withIntent('hit')
+      .withArgs({ target: 'rata' })
+      .withData({})
+      .build();
+
+    elCubo.elCubo(request);
+
+    expect(getDfaApp().lastAsk).to.contains(`No puedo goldearlo si no lo veo`);
+  });
+
+  it(`Can't hit if it's in another location`, () => {
+    const request = aDfaRequest()
+      .withIntent('hit')
+      .withArgs({ target: 'rata' })
+      .withData({})
+      .build();
+
+    elCubo.elCubo(request);
+
+    expect(getDfaApp().lastAsk).to.contains(`No puedo goldearlo si no lo veo`);
+  });
+
   it(`Can't hit if it's dead`, () => {
     const request = aDfaRequest()
       .withIntent('hit')
