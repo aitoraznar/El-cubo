@@ -9,7 +9,8 @@ const scureHit = (weaponName, targetName, data, scure) => {
   }
 
   let enemy = scure.enemies.getEnemyByName(targetName);
-  let enemyInRoom = scure.enemies.getEnemyByNameAndRoom(targetName, data.roomId);
+  let enemyInRoom = scure.enemies.getEnemyByNameAndRoom(targetName, data.roomId, data.unlocked);
+  //Enemy is in another Room
   if (enemy && !enemyInRoom) {
     return aResponse(scure.sentences.get('cant-attack-not-seen', {enemy: targetName}), data);
   }
@@ -18,6 +19,7 @@ const scureHit = (weaponName, targetName, data, scure) => {
     return aResponse(scure.sentences.get('cant-attack-to-target', {enemy: targetName}), data);
   }
 
+  //Enemy is Dead
   if (scure.enemies.isDead(enemy.id, data.deadList)) {
     return aResponse(scure.sentences.get('cant-attack-dead-target'), data);
   }

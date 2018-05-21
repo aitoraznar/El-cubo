@@ -32,11 +32,11 @@ describe('El Cubo - when Hitting', () => {
     expect(getDfaApp().lastAsk).to.contains(`No puedo golpear a pikolo`);
   });
 
-  it(`Can't hit if can't be seen`, () => {
+  it(`Can't hit if can't be seen (another location)`, () => {
     const request = aDfaRequest()
       .withIntent('hit')
       .withArgs({ target: 'rata' })
-      .withData({})
+      .withData({ roomId: 'cuboC' })
       .build();
 
     elCubo.elCubo(request);
@@ -44,11 +44,11 @@ describe('El Cubo - when Hitting', () => {
     expect(getDfaApp().lastAsk).to.contains(`No puedo golpearlo si no lo veo`);
   });
 
-  it(`Can't hit if it's in another location`, () => {
+  it(`Can't hit if it's locked`, () => {
     const request = aDfaRequest()
       .withIntent('hit')
       .withArgs({ target: 'rata' })
-      .withData({ roomId: 'cuboC'})
+      .withData({})
       .build();
 
     elCubo.elCubo(request);
@@ -60,7 +60,7 @@ describe('El Cubo - when Hitting', () => {
     const request = aDfaRequest()
       .withIntent('hit')
       .withArgs({ target: 'rata' })
-      .withData({ deadList: ['cuboA-rat']})
+      .withData({ deadList: ['cuboA-rat'], unlocked: ['cuboA-rata-unlocked']})
       .build();
 
     elCubo.elCubo(request);
@@ -72,7 +72,7 @@ describe('El Cubo - when Hitting', () => {
     const request = aDfaRequest()
       .withIntent('hit')
       .withArgs({ target: 'rata' })
-      .withData({})
+      .withData({unlocked: ['cuboA-rata-unlocked']})
       .build();
 
     elCubo.elCubo(request);
@@ -87,7 +87,7 @@ describe('El Cubo - when Hitting', () => {
     const request = aDfaRequest()
       .withIntent('hit')
       .withArgs({ weapon: 'mandanga', target: 'rata' })
-      .withData({})
+      .withData({unlocked: ['cuboA-rata-unlocked']})
       .build();
 
     elCubo.elCubo(request);
@@ -103,7 +103,7 @@ describe('El Cubo - when Hitting', () => {
     const request = aDfaRequest()
       .withIntent('hit')
       .withArgs({ weapon: 'palanca', target: 'rata' })
-      .withData({})
+      .withData({unlocked: ['cuboA-rata-unlocked']})
       .build();
 
     elCubo.elCubo(request);

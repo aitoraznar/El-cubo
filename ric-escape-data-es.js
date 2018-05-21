@@ -11,8 +11,8 @@ const aLockedDestination = (roomId, lock) => ({ isLockedDestination: true, roomI
 const aCondDesc = (condition, description) => ({ conditional: true, condition, description });
 const aCondDescUsage = (consumesObjects, condition, description) =>
   ({ conditional: true, consumesObjects, condition, description });
-const aEnemy = (id, name, synonyms, description, location, life, damage, canMove, onlyAttackOnce) =>
-    ({ id, name, synonyms, description, location, life, damage, canMove, onlyAttackOnce });
+const aEnemy = (id, name, synonyms, description, unlockedCondition, location, life, damage, canMove, onlyAttackOnce) =>
+    ({ id, name, synonyms, description, unlockedCondition, location, life, damage, canMove, onlyAttackOnce });
 const theEndingScene = description => ({ isEndingScene: true, description });
 const isPickable = true;
 const useOnlyOnce = true;
@@ -182,7 +182,7 @@ exports.data = {
       anUnlockingAction('Tiras de la cuerda, se escucha perfectamente cómo la cuerda recorre las guías hasta que al final escuchas un “click” y cae un objeto casi encima de ti. Ves que es una llave.', 'cuboA-llaves-unlocked')
     ], useOnlyOnce),
     anUsage('cuboA-cuerda-dcha', [
-        'Tiras de la cuerda se escucha perfectamente cómo la cuerda recorre las guías hasta que al final escuchas un “click” y la caja cae desde la esquina. De la caja sale una rata que se dirige hacia ti.'
+      anUnlockingAction('Tiras de la cuerda se escucha perfectamente cómo la cuerda recorre las guías hasta que al final escuchas un “click” y la caja cae desde la esquina. De la caja sale una rata que se dirige hacia ti.', 'cuboA-rata-unlocked')
     ], useOnlyOnce),
     anUsage('cuboA-llaves', [
         '¿Esta llave me liberará de las cadenas? Será mejor probar con las cadenas, ¡no?'
@@ -225,6 +225,6 @@ exports.data = {
   ],
   enemies: [
       aEnemy('cuboA-rat', 'Rata', ['ratón', 'rata de cloaca', 'sagutxu'], 'Es una rata de cloaca, con un pelo mugroso y mucha mala baba',
-          'cuboA', 15, 5, true, false),
+        'cuboA-rata-unlocked', 'cuboA', 15, 5, true, false),
   ]
 };

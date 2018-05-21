@@ -194,11 +194,13 @@ class ScureEnemies {
         return this.data.enemies.find(i => isTextEqual(i.name, name) || isSynonym(i.synonyms, name));
     }
 
-    getEnemyByNameAndRoom(name, roomId) {
+    getEnemyByNameAndRoom(name, roomId, unlocked) {
         if (isEmptyArg(name)) return null;
-        return this.data.enemies.find(i =>
-        (isTextEqual(i.name, name) || isSynonym(i.synonyms, name))
-        && (i.location === roomId));
+        const isUnlocked = item => (unlocked && unlocked.indexOf(item.unlockedCondition) >= 0);
+        const enemy = this.data.enemies.find(i => (isTextEqual(i.name, name) || isSynonym(i.synonyms, name))
+          && (i.location === roomId));
+        if (!enemy) return null;
+        if (isUnlocked(enemy)) return enemy;
     }
 
     getEnemiesByRoom(roomId) {
