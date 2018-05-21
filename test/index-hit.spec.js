@@ -41,19 +41,19 @@ describe('El Cubo - when Hitting', () => {
 
     elCubo.elCubo(request);
 
-    expect(getDfaApp().lastAsk).to.contains(`No puedo goldearlo si no lo veo`);
+    expect(getDfaApp().lastAsk).to.contains(`No puedo golpearlo si no lo veo`);
   });
 
   it(`Can't hit if it's in another location`, () => {
     const request = aDfaRequest()
       .withIntent('hit')
       .withArgs({ target: 'rata' })
-      .withData({})
+      .withData({ roomId: 'cuboC'})
       .build();
 
     elCubo.elCubo(request);
 
-    expect(getDfaApp().lastAsk).to.contains(`No puedo goldearlo si no lo veo`);
+    expect(getDfaApp().lastAsk).to.contains(`No puedo golpearlo si no lo veo`);
   });
 
   it(`Can't hit if it's dead`, () => {

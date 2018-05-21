@@ -58,6 +58,7 @@ exports.data = {
     'no-target-to-attack': 'No hay nada a lo que golpear...',
     'cant-attack-to-target': 'No puedo golpear a {enemy}',
     'cant-attack-dead-target': 'No puedo goldearlo si ya está muerto',
+    'cant-attack-not-seen': 'No puedo golpearlo si no lo veo',
     'hit-target': 'Alcanzas a {target} con {weapon}, le quitas {points} de vida.',
     'hit-target-dead': 'Tras golpear {target} con {weapon}, lo derrotas.',
   },
