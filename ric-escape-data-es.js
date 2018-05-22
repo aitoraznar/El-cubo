@@ -147,9 +147,9 @@ exports.data = {
       aCondDesc('picked:cuboA-llaves', 'Igual podría usar la llave con las cadenas, ¿no?'),
       aCondDesc('else', 'Es una cadena robusta anclada a la pared y a tu pierna derecha. El extremo atado a tu pierna tiene una cerradura, crees que podrías abrirla con una llave o unas ganzúas.'),
     ], 'cuboA', !isPickable),
-    anItem('cuboA-rat', 'Rata', ['ratón', 'rata de cloaca', 'sagutxu'], [
+    anItem('cuboA-rata', 'Rata', ['ratón', 'rata de cloaca', 'sagutxu'], [
         aCondDesc('!unlocked:cuboA-rata-unlocked', '¿Qué rata?'),
-        aCondDesc('unlocked:cuboA-rata-muerta-unlocked', 'La jodida rata está muerta por fin.'),
+        aCondDesc('unlocked:dead-cuboA-rata', 'La jodida rata está muerta por fin.'),
         aCondDesc('unlocked:cuboA-rata-unlocked', '¡Es una mugrosa rata que me está mordiendo!'),
     ], 'cuboA', isPickable),
 
@@ -224,7 +224,7 @@ exports.data = {
 
   ],
   enemies: [
-      aEnemy('cuboA-rat', 'Rata', ['ratón', 'rata de cloaca', 'sagutxu'], 'Es una rata de cloaca, con un pelo mugroso y mucha mala baba',
+      aEnemy('cuboA-rata', 'Rata', ['ratón', 'rata de cloaca', 'sagutxu'], 'Es una rata de cloaca, con un pelo mugroso y mucha mala baba',
         'cuboA-rata-unlocked', 'cuboA', 15, 5, true, false),
   ]
 };

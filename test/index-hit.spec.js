@@ -60,7 +60,7 @@ describe('El Cubo - when Hitting', () => {
     const request = aDfaRequest()
       .withIntent('hit')
       .withArgs({ target: 'rata' })
-      .withData({ deadList: ['cuboA-rat'], unlocked: ['cuboA-rata-unlocked']})
+      .withData({ deadList: ['cuboA-rata'], unlocked: ['cuboA-rata-unlocked']})
       .build();
 
     elCubo.elCubo(request);
@@ -109,6 +109,8 @@ describe('El Cubo - when Hitting', () => {
     elCubo.elCubo(request);
 
     expect(getDfaApp().lastAsk).to.contains('lo derrotas');
+    expect(getDfaApp().data.deadList).to.eql(['cuboA-rata']);
+    expect(getDfaApp().data.unlocked).to.eql(['cuboA-rata-unlocked', 'dead-' + 'cuboA-rata']);
   });
 
 });

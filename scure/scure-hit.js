@@ -1,6 +1,16 @@
 const isEmptyArg = require('../lib/common').isEmptyArg;
 const aResponse = require('./scure-response').aResponse;
 
+const unlockIfDeadEnemy = (enemy, data) => {
+  if (enemy.life <= 0) {
+    data.unlocked = data.unlocked || [];
+    if (data.unlocked.indexOf(enemy.id) === -1) {
+      data.unlocked.push('dead-' + enemy.id);
+    }
+  }
+  return data;
+};
+
 let lastAttack;
 const scureHit = (weaponName, targetName, data, scure) => {
   console.log('[scureHit]', `weaponName: ${weaponName} - targetName: ${targetName}`);
@@ -38,14 +48,17 @@ const scureHit = (weaponName, targetName, data, scure) => {
   }
 
   //Hit
-  scure.enemies.hit(enemy, weapon, data.deadList);
+  scure.enemies.hit(enemy, weapon, data);
 
-  if (enemy.life <= 0) {
+  unlockIfDeadEnemy(enemy, data);
+
+  const isDead = scure.enemies.isDead(enemy.id, data.deadList);
+  if (isDead) {
     let response = scure.sentences.get('hit-target-dead', {target: enemy.name, weapon: weapon.name, points: weapon.damage});
     return aResponse(response);
   }
 
-  if (enemy.life > 0) {
+  if (!isDead) {
     let response = scure.sentences.get('hit-target', {target: enemy.name, weapon: weapon.name, points: weapon.damage});
     return aResponse(response);
   }

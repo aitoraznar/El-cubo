@@ -216,12 +216,12 @@ class ScureEnemies {
         return deadList.indexOf(enemyId) >= 0;
     }
 
-    hit(enemy, weapon, deadList) {
+    hit(enemy, weapon, data) {
         if (!(enemy && weapon)) return false;
         enemy.life -= weapon.damage;
+        data.deadList = data.deadList || [];
         if (enemy.life <= 0) {
-          deadList = deadList || [];
-          deadList.push(enemy.id);
+          data.deadList.push(enemy.id);
         }
         return true;
     }
