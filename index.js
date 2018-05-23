@@ -26,6 +26,7 @@ const fallback = require('./intents/others').fallback;
 const checkAndChangeLanguage = require('./intents/language').checkAndChangeLanguage;
 const bye = require('./intents/others').bye;
 const hit = require('./intents/hit').hit;
+const throwIntent = require('./intents/throw').throw;
 
 const elCubo = (request, response) => {
   const appInit = new DialogflowApp({ request, response });
@@ -63,6 +64,7 @@ const elCubo = (request, response) => {
   actionMap.set('use', use(scure));
   actionMap.set('inventory', inventory(scure));
   actionMap.set('hit', hit(scure));
+  actionMap.set('throw', throwIntent(scure));
   actionMap.set('bye', bye(scure));
   actionMap.set('input.unknown', fallback(scure));
   //actionMap.set('_exit._exit-yes', bye(scure));
