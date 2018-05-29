@@ -16,16 +16,16 @@ const scureWalk = (arg, data, scure) => {
     return aResponse(getPossibleDestinationsSentence(scure, data));
 
   } else if (isEmptyArg(arg)) {
-      return aResponse(getPossibleDestinationsSentence(scure, data));
+    return aResponse(getPossibleDestinationsSentence(scure, data));
   }
 
   const newRoom = scure.rooms.getRoomByName(arg);
   if (newRoom) {
-      const isAvailableRoom = availableRoomIds.indexOf(newRoom.id) > -1;
-      if (!isAvailableRoom) {
-          const unreachablePlaceSentence = scure.sentences.get('destination-unreachable', { destination: arg  });
-          return aResponse(`${unreachablePlaceSentence}`);
-      }
+    const isAvailableRoom = availableRoomIds.indexOf(newRoom.id) > -1;
+    if (!isAvailableRoom) {
+      const unreachablePlaceSentence = scure.sentences.get('destination-unreachable', {destination: arg});
+      return aResponse(`${unreachablePlaceSentence}`);
+    }
   }
 
   //const unlockedRoomIds = scure.rooms.getUnlockedDestinationsIds(data.roomId, data.unlocked);
@@ -37,7 +37,7 @@ const scureWalk = (arg, data, scure) => {
   //const newRoom = scure.rooms.getRoomByName(arg);
   const isAllowed = scure.rooms.isAllowedDestination(arg, data.roomId, data.unlocked);
   if (!newRoom || !isAllowed) {
-    const unknownPlaceSentence = scure.sentences.get('destination-unknown', { destination: arg  });
+    const unknownPlaceSentence = scure.sentences.get('destination-unknown', {destination: arg});
     let response = `${unknownPlaceSentence}`;
     if (newRoom && !isAllowed) {
       const destinationsSentence = getPossibleDestinationsSentence(scure, data);
@@ -53,17 +53,28 @@ const scureWalk = (arg, data, scure) => {
 
   let response = ``;
   if (currentRoom.events && currentRoom.events.exit) {
-      response += ` ${currentRoom.events.exit} `;
+    if (currentRoom.events.exit.type === 'text') {
+      response += ` ${currentRoom.events.exit.eventData} `;
+    }
+    if (currentRoom.events.exit.type === 'gameDecision') {
+      data.gameDecision = currentRoom.events.exit.eventData;
+    }
+
   }
   response += getDescription(newRoom.description, data, scure);
   if (newRoom.events && newRoom.events.enter) {
-      response += ` ${newRoom.events.enter}`;
+    if (newRoom.events.enter.type === 'text') {
+      response += ` ${newRoom.events.enter.eventData} `;
+    }
+    if (newRoom.events.enter.type === 'gameDecision') {
+      data.gameDecision = newRoom.events.enter.eventData;
+    }
 
-      //Se ha abierto la primera Escotilla
-      if (!scure.data.firstEverOpenedHatch) {
-          scure.data.firstEverOpenedHatch = true;
-          response += ` ${getLeftTimeFrom(scure, data)}`;
-      }
+    //Se ha abierto la primera Escotilla
+    if (!scure.data.firstEverOpenedHatch) {
+      scure.data.firstEverOpenedHatch = true;
+      //response += ` ${getLeftTimeFrom(scure, data)}`;
+    }
   }
 
   return aResponse(response, data);

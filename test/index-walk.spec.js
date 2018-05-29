@@ -30,7 +30,10 @@ describe('El Cubo - when walking', () => {
       const cuboC = scure.rooms.getRoom('cuboC');
       expect(getDfaApp().data.roomId).to.equal('cuboC');
       expect(getDfaApp().lastAsk).to.contain(scure.rooms.getRoom('cuboC').description);
-      expect(getDfaApp().lastAsk).to.contain(cuboA.events.exit);
+
+      //Events
+      expect(getDfaApp().lastAsk).to.contain(cuboA.events.exit.eventData);
+      expect(getDfaApp().data.gameDecision).to.eql(cuboC.events.enter.eventData);
   });
 
   it('cannot change the roomId when walking to Unreachable destination', () => {

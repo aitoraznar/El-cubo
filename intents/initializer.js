@@ -1,6 +1,7 @@
 const getLanguage = require('../lib/common').getLanguage;
 
 const initializeStartingData = (scure, newApp) => {
+  newApp.StandardIntents = { OPTION: 'OPTION' };
   newApp.data.startTime = newApp.data.startTime || JSON.stringify(new Date());
   newApp.data.life = newApp.data.life || scure.getInit().life;
   newApp.data.roomId = newApp.data.roomId || scure.getInit().roomId;

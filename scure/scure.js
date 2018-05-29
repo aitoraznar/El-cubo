@@ -227,6 +227,22 @@ class ScureEnemies {
     }
 }
 
+class ScureGameDecision {
+  constructor(data) {
+    this.data = data;
+  }
+
+  getGameDecision(id) {
+    if (isEmptyArg(id)) return null;
+    return this.data.gameDecisions.find(i => i.id === id);
+  }
+
+  getGameDecisionOptions(id, gameDecision) {
+    if (isEmptyArg(id)) return null;
+    return gameDecision.options.find(i => i.id === id);
+  }
+}
+
 class Scure {
   constructor(data) {
     this.data = data;
@@ -235,6 +251,7 @@ class Scure {
     this.rooms = new ScureRooms(data);
     this.usages = new ScureUsages(data);
     this.enemies = new ScureEnemies(data);
+    this.gameDecisions = new ScureGameDecision(data);
   }
 
   getInit() {

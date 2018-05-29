@@ -4,6 +4,12 @@ const anItem = (id, name, synonyms, description, location, pickable, pickingResp
   ({ id, name, synonyms, description, location, pickable, pickingResponse, isWeapon, damage });
 const anUsage = (items, response, onlyOnce) =>
   ({ items, response, onlyOnce });
+const aRoomEvent = (type, eventData, isWaitingResponse) =>
+  ({ type, eventData, isWaitingResponse });
+const aGameDecision = (id, title, question, options) =>
+  ({ id, title, question, options });
+const aGameDecisionOption = (id, text, synonyms, postDescription, provokesDeath) =>
+  ({ id, text, synonyms, postDescription, provokesDeath });
 const anUnlockingAction = (response, lock) => ({ isUnlockingAction: true, response, lock });
 const aPickingAction = (response, itemId) => ({ isPickingAction: true, response, itemId });
 const aConditionalResponse = conditions => ({ isConditional: true, conditions });
@@ -19,6 +25,8 @@ const useOnlyOnce = true;
 const consumesTheObjects = true;
 const isOpeneable = true;
 const isWeapon = true;
+const provokesDeath = true;
+const isWaitingResponse = true;
 
 exports.data = {
   sentences: {
@@ -71,10 +79,12 @@ exports.data = {
   },
   rooms: [
     aRoom('cuboA', 'Cubo A', ['habitación A', 'estancia A', 'cuba'], 'La habitación tiene forma de cubo y está iluminada de rojo. Tiene 3 escotillas, una arriba, una delante y otra a tu derecha. En el centro de la habitación ves dos cuerdas.', {
-      'exit': 'Muahahahaha, te mereces todo lo malo que te pase. Estás encerrado debido a las malas acciones que has cometido durante tu vida, solo la redención te dará la libertad. Vigila tus dónde pisas.'
+      'exit': aRoomEvent('text', 'Muahahahaha, te mereces todo lo malo que te pase. Estás encerrado debido a las malas acciones que has cometido durante tu vida, solo la redención te dará la libertad. Vigila tus dónde pisas.')
     }),
     aRoom('cuboB', 'Cubo B', ['habitación B', 'estancia B'], 'Cubo 2 descripción. ¿qué haré a continuación?', {}),
-    aRoom('cuboC', 'Cubo C', ['habitación C', 'estancia C', 'cuba'], 'Cubo 3 descripción. ¿qué haré a continuación?', {}),
+    aRoom('cuboC', 'Cubo C', ['habitación C', 'estancia C', 'cuba'], 'Cubo 3 descripción. ¿qué haré a continuación?', {
+      'enter': aRoomEvent('gameDecision', 'cuboC-trap')
+    }),
     aRoom('cuboD', 'Cubo D', ['habitación D', 'estancia D'], [
       aCondDesc('!picked:comedor-cartera', 'No he cogido... Cubo 2 descripción. ¿qué haré a continuación?'),
       aCondDesc('default', 'Cubo 4 descripción. ¿qué haré a continuación?'),
@@ -226,5 +236,13 @@ exports.data = {
   enemies: [
       aEnemy('cuboA-rata', 'Rata', ['ratón', 'rata de cloaca', 'sagutxu'], 'Es una rata de cloaca, con un pelo mugroso y mucha mala baba',
         'cuboA-rata-unlocked', 'cuboA', 15, 5, true, false),
+  ],
+  gameDecisions: [
+    aGameDecision('cuboC-trap', 'Al entrar en el cubo te das cuenta de que algo no va bien, escuchas un chasquido que no te da buenas vibraciones', '¿qué haces?', [
+      aGameDecisionOption('cuboC-trap-1', 'Te agachas esperando a que todo pase', ['Me agacho', 'Me quedo quieto', 'No me muevo', 'Espero'],
+        'Tu mala decisión hace que una guillotina salida del techo te parta en dos', provokesDeath),
+      aGameDecisionOption('cuboC-trap-2', 'Tu instinto te hace dar un salto de tirabuzón', ['Salto', 'Pego un salto', 'Sigo mi instinto', 'Sigo mi instinto y salto'],
+        '¡Por muy poco! has esquivado una guillotina que salió del techo', !provokesDeath)
+    ], !isWaitingResponse)
   ]
 };

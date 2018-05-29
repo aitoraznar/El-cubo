@@ -27,6 +27,8 @@ const checkAndChangeLanguage = require('./intents/language').checkAndChangeLangu
 const bye = require('./intents/others').bye;
 const hit = require('./intents/hit').hit;
 const throwIntent = require('./intents/throw').throw;
+const gameDecision = require('./intents/gameDecision').gameDecision;
+const manageGameDecision = require('./intents/gameDecision').manageGameDecision;
 
 const elCubo = (request, response) => {
   const appInit = new DialogflowApp({ request, response });
@@ -54,6 +56,11 @@ const elCubo = (request, response) => {
     return;
   }
 
+  if (app.data.gameDecision && app.getIntent() !== app.StandardIntents.OPTION) {
+    gameDecision(scure)(app);
+    return;
+  }
+
   const actionMap = new Map();
   //actionMap.set('input.welcome', welcome(scure));
   actionMap.set('start.game', startGame(scure));
@@ -67,6 +74,7 @@ const elCubo = (request, response) => {
   actionMap.set('throw', throwIntent(scure));
   actionMap.set('bye', bye(scure));
   actionMap.set('input.unknown', fallback(scure));
+  actionMap.set(app.StandardIntents.OPTION, manageGameDecision(scure));
   //actionMap.set('_exit._exit-yes', bye(scure));
 
   app.handleRequest(actionMap);

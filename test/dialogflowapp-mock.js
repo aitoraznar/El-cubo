@@ -1,8 +1,11 @@
+const { List, OptionItem } = require('actions-on-google/response-builder');
+
 class DialogflowAppMock {
 
   constructor(options) {
     this.lastAsk = '';
     this.lastTell = '';
+    this.lastListAsk = null;
     this.request = options.request;
     this.response = options.response;
     this.data = options.request.body.data;
@@ -38,12 +41,36 @@ class DialogflowAppMock {
     this.lastAsk = x;
   }
 
+  askWithList(title, list) {
+    this.lastAsk = title;
+    this.lastListAsk = list;
+  }
+
   tell(x) {
     this.lastTell = x;
   }
 
   hasSurfaceCapability(capability) {
     return this.capabilities.indexOf(capability) > -1;
+  }
+
+  buildList (title) {
+    return new List(title);
+  }
+
+  buildOptionItem (key, synonyms) {
+    const optionItem = new OptionItem();
+    if (key) {
+      optionItem.setKey(key);
+    }
+    if (synonyms) {
+      optionItem.addSynonyms(synonyms);
+    }
+    return optionItem;
+  }
+
+  getSelectedOption() {
+    return this.getArgument('OPTION');
   }
 }
 
@@ -85,6 +112,11 @@ class DfaRequestBuilder {
 
   withLocale(locale) {
     this.locale = locale;
+    return this;
+  }
+
+  withLastOption(lastOption) {
+    this.args['OPTION'] = lastOption;
     return this;
   }
 

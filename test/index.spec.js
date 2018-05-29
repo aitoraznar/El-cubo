@@ -15,6 +15,37 @@ describe('El Cubo - others', () => {
     expect(getDfaApp().lastAsk).to.contains('acabas de despertar');
   });
 
+  it('Game in "Option decision" mode cannot allow to do another intent', () => {
+    const request = aDfaRequest()
+      .withIntent('look')
+      .withArgs({ arg: 'dado' })
+      .withData({ gameDecision: 'cuboC-trap', roomId: 'cuboC', unlocked: ['cuboC-unlocked'], firstEverOpenedHatch: false })
+      .build();
+
+    elCubo.elCubo(request);
+
+    const gameDecision = scure.gameDecisions.getGameDecision('cuboC-trap');
+
+    expect(getDfaApp().lastAsk).to.contains(gameDecision.title);
+    expect(getDfaApp().lastListAsk).not.to.eql(null);
+    expect(getDfaApp().lastListAsk.items.length).to.eql(gameDecision.options.length);
+    expect(gameDecision.isWaitingResponse).to.eql(true);
+  });
+
+  it('Responses an option consequence when the Game is in "Option decision" mode', () => {
+    const request = aDfaRequest()
+      .withIntent('OPTION')
+      .withLastOption('cuboC-trap-1')
+      .withData({ gameDecision: 'cuboC-trap', roomId: 'cuboC', unlocked: ['cuboC-unlocked'], firstEverOpenedHatch: false })
+      .build();
+
+    elCubo.elCubo(request);
+
+    const gameDecision = scure.gameDecisions.getGameDecision('cuboC-trap');
+    expect(getDfaApp().lastTell).to.contains('mala decisión');
+    expect(gameDecision.isWaitingResponse).to.eql(false);
+  });
+
   it('tells you the time and map when help', () => {
     const request = aDfaRequest()
       .withIntent('help')
