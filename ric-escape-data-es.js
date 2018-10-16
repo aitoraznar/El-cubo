@@ -79,10 +79,10 @@ exports.data = {
   },
   rooms: [
     aRoom('cuboA', 'Cubo A', ['habitación A', 'estancia A', 'cuba'], 'La habitación tiene forma de cubo y está iluminada de rojo. Tiene 3 escotillas, una arriba, una delante y otra a tu derecha. En el centro de la habitación ves dos cuerdas.', {
-      'exit': aRoomEvent('text', 'Muahahahaha, te mereces todo lo malo que te pase. Estás encerrado debido a las malas acciones que has cometido durante tu vida, solo la redención te dará la libertad. Vigila tus dónde pisas.')
+      'exit': aRoomEvent('text', 'Al salir escuchas una voz perturbadora... Muahahahaha, te mereces todo lo malo que te pase. Estás encerrado debido a las malas acciones que has cometido durante tu vida, solo la redención te dará la libertad. Vigila dónde pisas.')
     }),
     aRoom('cuboB', 'Cubo B', ['habitación B', 'estancia B'], 'Cubo 2 descripción. ¿qué haré a continuación?', {}),
-    aRoom('cuboC', 'Cubo C', ['habitación C', 'estancia C', 'cuba'], 'Cubo 3 descripción. ¿qué haré a continuación?', {
+    aRoom('cuboC', 'Cubo C', ['habitación C', 'estancia C', 'cuba'], 'Esta habitación tiene una iluminación blanca. Transmite una sensación de pureza e inocencia que hast es perturbadora, ¿qué hacemos?', {
       'enter': aRoomEvent('gameDecision', 'cuboC-trap')
     }),
     aRoom('cuboD', 'Cubo D', ['habitación D', 'estancia D'], [
@@ -241,7 +241,7 @@ exports.data = {
     aGameDecision('cuboC-trap', 'Al entrar en el cubo te das cuenta de que algo no va bien, escuchas un chasquido que no te da buenas vibraciones', '¿qué haces?', [
       aGameDecisionOption('cuboC-trap-1', 'Te agachas esperando a que todo pase', ['Me agacho', 'Me quedo quieto', 'No me muevo', 'Espero'],
         'Tu mala decisión hace que una guillotina salida del techo te parta en dos', provokesDeath),
-      aGameDecisionOption('cuboC-trap-2', 'Tu instinto te hace dar un salto de tirabuzón', ['Salto', 'Pego un salto', 'Sigo mi instinto', 'Sigo mi instinto y salto'],
+      aGameDecisionOption('cuboC-trap-2', 'Tu instinto te hace dar un salto de tirabuzón', ['Salto', 'Pego un salto', 'Sigo mi instinto', 'Sigo mi instinto y salto', 'Reacciono', 'Me muevo'],
         '¡Por muy poco! has esquivado una guillotina que salió del techo', !provokesDeath)
     ], !isWaitingResponse)
   ]
