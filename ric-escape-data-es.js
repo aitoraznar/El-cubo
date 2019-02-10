@@ -8,8 +8,8 @@ const aRoomEvent = (type, eventData, isWaitingResponse) =>
   ({ type, eventData, isWaitingResponse });
 const aGameDecision = (id, title, question, options) =>
   ({ id, title, question, options });
-const aGameDecisionOption = (id, text, synonyms, postDescription, provokesDeath) =>
-  ({ id, text, synonyms, postDescription, provokesDeath });
+const aGameDecisionOption = (id, title, synonyms, postDescription, provokesDeath) =>
+  ({ id, title, synonyms, postDescription, provokesDeath });
 const anUnlockingAction = (response, lock) => ({ isUnlockingAction: true, response, lock });
 const aPickingAction = (response, itemId) => ({ isPickingAction: true, response, itemId });
 const aConditionalResponse = conditions => ({ isConditional: true, conditions });
@@ -69,13 +69,18 @@ exports.data = {
     'cant-attack-not-seen': 'No puedo golpearlo si no lo veo',
     'hit-target': 'Alcanzas a {target} con {weapon}, le quitas {points} de vida.',
     'hit-target-dead': 'Tras golpear {target} con {weapon}, lo derrotas.',
+    'throw-noarg': 'No puedo lanzar eso que me pides',
+    'no-item-to-throw': 'No puedo lanzar {item}.',
+    'item-thrown-in-place': 'Se ha lanzado el {item} a {target}',
+    'final-question': '¿Qué hacemos ahora?',
   },
   init: {
     life: 100,
     roomId: 'cuboA',
     inventory: ['dice', 'boots'],
     picked: ['dice', 'boots'],
-    unlocked: ['cuboA-unlocked']
+    unlocked: ['cuboA-unlocked'],
+    totalMinutes: 6 * 6
   },
   rooms: [
     aRoom('cuboA', 'Cubo A', ['habitación A', 'estancia A', 'cuba'], 'La habitación tiene forma de cubo y está iluminada de rojo. Tiene 3 escotillas, una arriba, una delante y otra a tu derecha. En el centro de la habitación ves dos cuerdas.', {

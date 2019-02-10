@@ -1,8 +1,7 @@
 require('babel-register');
 const actionsOnGoogle = require('actions-on-google');
-const actionsOnGoogleMock = require('./dialogflowapp-mock');
-const admin = require('firebase-admin');
-const functions = require('firebase-functions');
+const { DialogflowV2Mock, aDfaV2Request, getDfaV2App } = require('../mock/dialogflowapp-mock');
+const { Scure } = require('../scure/scure');
 
 global.chai = require('chai');
 global.sinon = require('sinon');
@@ -13,10 +12,10 @@ global.chai.should();
 global.expect = global.chai.expect;
 
 
-actionsOnGoogle.DialogflowApp = actionsOnGoogleMock.DialogflowAppMock;
+actionsOnGoogle.dialogflow = DialogflowV2Mock;
 
-admin.initializeApp = () => { };
-functions.config = () => ({ firebase: {} });
+global.aDfaRequest = aDfaV2Request;
+global.getDfaApp = getDfaV2App;
+global.getDfaV2Conv = () => getDfaV2App().conv;
 
-global.aDfaRequest = actionsOnGoogleMock.aDfaRequest;
-global.getDfaApp = actionsOnGoogleMock.getDfaApp;
+global.buildTestScure = () => new Scure('es');

@@ -11,7 +11,6 @@ const unlockIfDeadEnemy = (enemy, data) => {
   return data;
 };
 
-let lastAttack;
 const scureHit = (weaponName, targetName, data, scure) => {
   console.log('[scureHit]', `weaponName: ${weaponName} - targetName: ${targetName}`);
   if (isEmptyArg(targetName)) {
@@ -39,10 +38,11 @@ const scureHit = (weaponName, targetName, data, scure) => {
   if (isEmptyArg(weaponName)) {
     //Use default weapon
     weapon = scure.items.getItem('fist');
+  } else {
+    weapon = scure.items.getItemByName(weaponName);
   }
 
   //Use hands if invalid weapon provided
-  weapon = scure.items.getItemByName(weaponName);
   if (!(weapon && weapon.isWeapon)) {
     weapon = scure.items.getItem('fist');
   }

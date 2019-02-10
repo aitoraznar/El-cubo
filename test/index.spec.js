@@ -1,108 +1,113 @@
-const elCubo = require('../index.js');
-const elCuboData = require('../ric-escape-data').data['es'];
-const scure = require('../scure/scure').buildScureFor(elCuboData);
+const { appExecutor, scure } = require('../index.js');
+const { initializeScure } = require('../scure/scure-initializer');
+const { StandardIntents } = require('../lib/common');
 
 const ABOUT_90_MINUTES_AGO = new Date(new Date().getTime() - (90 * 1000 * 60));
 
 describe('El Cubo - others', () => {
-  it('tell the introduction text', () => {
-    const request = aDfaRequest()
-      .withIntent('start.game')
-      .build();
-
-    elCubo.elCubo(request);
-
-    expect(getDfaApp().lastAsk).to.contains('acabas de despertar');
+  let data;
+  beforeEach(() => {
+    data = initializeScure(scure, {});
   });
 
-  it('Game in "Option decision" mode cannot allow to do another intent', () => {
+  it('tell the introduction text', () => {
     const request = aDfaRequest()
-      .withIntent('look')
+      .withIntent('Welcome Intent - yes')
+      .build();
+
+    appExecutor(request);
+
+    expect(getDfaV2Conv().lastAsk).to.contains('acabas de despertar');
+  });
+
+  xit('Game in "Option decision" mode cannot allow to do another intent', () => {
+    const request = aDfaRequest()
+      .withIntent('Look')
       .withArgs({ arg: 'dado' })
       .withData({ gameDecision: 'cuboC-trap', roomId: 'cuboC', unlocked: ['cuboC-unlocked'], firstEverOpenedHatch: false })
       .build();
 
-    elCubo.elCubo(request);
+    appExecutor(request);
 
     const gameDecision = scure.gameDecisions.getGameDecision('cuboC-trap');
 
-    expect(getDfaApp().lastAsk).to.contains(gameDecision.title);
-    expect(getDfaApp().lastListAsk).not.to.eql(null);
-    expect(getDfaApp().lastListAsk.items.length).to.eql(gameDecision.options.length);
+    expect(getDfaV2Conv().lastAsk).to.contains(gameDecision.title);
+    expect(getDfaV2Conv().lastListAsk).not.to.eql(null);
+    expect(getDfaV2Conv().lastListAsk.items.length).to.eql(gameDecision.options.length);
     expect(gameDecision.isWaitingResponse).to.eql(true);
   });
 
-  it('Responses an option consequence when the Game is in "Option decision" mode', () => {
+  xit('Responses an option consequence when the Game is in "Option decision" mode', () => {
     const request = aDfaRequest()
-      .withIntent('OPTION')
+      .withIntent(StandardIntents.OPTION)
       .withLastOption('cuboC-trap-1')
       .withData({ gameDecision: 'cuboC-trap', roomId: 'cuboC', unlocked: ['cuboC-unlocked'], firstEverOpenedHatch: false })
       .build();
 
-    elCubo.elCubo(request);
+    appExecutor(request);
 
     const gameDecision = scure.gameDecisions.getGameDecision('cuboC-trap');
-    expect(getDfaApp().lastTell).to.contains('mala decisión');
+    expect(getDfaV2Conv().lastClose).to.contains('mala decisión');
     expect(gameDecision.isWaitingResponse).to.eql(false);
   });
 
   it('tells you the time and map when help', () => {
     const request = aDfaRequest()
-      .withIntent('help')
+      .withIntent('Help')
       .withData({ numCommands: 10 })
       .build();
 
-    elCubo.elCubo(request);
+    appExecutor(request);
 
-    expect(getDfaApp().lastAsk).to.contains('Puedes hacer las siguientes acciones');
+    expect(getDfaV2Conv().lastAsk).to.contains('Puedes hacer las siguientes acciones');
   });
 
   xit('tells you the map in English when help', () => {
     const request = aDfaRequest()
-      .withIntent('help')
+      .withIntent('Help')
       .withLocale('en-US')
       .withData({ numCommands: 10 })
       .build();
 
-    elCubo.elCubo(request);
+    appExecutor(request);
 
-    expect(getDfaApp().lastAsk.items[1].basicCard.image.url).to.contains('ric-escape-map-en.jpg');
+    expect(getDfaV2Conv().lastAsk.items[1].basicCard.image.url).to.contains('ric-escape-map-en.jpg');
   });
 
   xit('does not tell you the map when no screen capability', () => {
     const request = aDfaRequest()
-      .withIntent('help')
+      .withIntent('Help')
       .withLocale('en-US')
       .withSurfaceCapabilities(['AUDIO_OUTPUT'])
       .withData({ numCommands: 10 })
       .build();
 
-    elCubo.elCubo(request);
+    appExecutor(request);
 
-    expect(getDfaApp().lastAsk).to.contains('You can ask me to');
+    expect(getDfaV2Conv().lastAsk).to.contains('You can ask me to');
   });
 
   it('says goodbye if bye intent and cleans', () => {
     const request = aDfaRequest()
-      .withIntent('bye')
+      .withIntent('Bye')
       .withData({ inventory: ['cartera'], startTime: JSON.stringify(new Date() - 50) })
       .build();
 
-    elCubo.elCubo(request);
+    appExecutor(request);
 
-    expect(getDfaApp().lastTell).to.contains('Adiós.');
-    expect(getDfaApp().data).to.eql(null);
+    expect(getDfaV2Conv().lastClose).to.contains('Adiós.');
+    expect(getDfaV2Conv().data).to.eql(null);
   });
 
   it('finishes when time is up and cleans', () => {
     const request = aDfaRequest()
-      .withIntent('bye')
+      .withIntent('Bye')
       .withData({ startTime: JSON.stringify(ABOUT_90_MINUTES_AGO) })
       .build();
 
-    elCubo.elCubo(request);
+    appExecutor(request);
 
-    expect(getDfaApp().lastTell).to.contains(scure.sentences.get('end-timeover'));
-    expect(getDfaApp().data.inventory).to.eql([]);
+    expect(getDfaV2Conv().lastClose).to.contains(scure.sentences.get('end-timeover'));
+    expect(getDfaV2Conv().data.inventory).to.eql([]);
   });
 });

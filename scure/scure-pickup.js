@@ -30,8 +30,10 @@ const scurePickup = (itemName, data, scure) => {
     const name = item.name.toLowerCase();
     return aResponse(scure.sentences.get('item-alreadypicked', { name }));
   }
+
+  scure.items.addToInventory(data, item.id);
+
   const name = item.name.toLowerCase();
-  addToInventory(data, item.id);
   const aditionalResponse = item.pickingResponse ? ` ${item.pickingResponse}` : '';
   const pickedResponse = scure.sentences.get('item-pickedup', { name });
   return aResponse(`${pickedResponse}${aditionalResponse}`, data);

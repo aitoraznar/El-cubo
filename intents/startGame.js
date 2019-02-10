@@ -1,9 +1,9 @@
 const scureStartGame = require('../scure/scure-startgame').scureStartGame;
 
-const startGame = scure => (app) => {
-  const scureResponse = scureStartGame(app.data, scure);
+const startGame = scure => (conv, args) => {
+  const scureResponse = scureStartGame(conv.data, scure);
 
-  app.ask(scureResponse.sentence);
+  conv.ask(scureResponse.sentence);
 };
 
 exports.startGame = startGame;

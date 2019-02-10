@@ -1,7 +1,12 @@
-const elCuboData = require('../ric-escape-data').data['es'];
-const scure = require('../scure/scure').buildScureFor(elCuboData);
+const { appExecutor, scure } = require('../index.js');
+const { initializeScure } = require('../scure/scure-initializer');
 
 describe('El Cubo - item extended getByName', () => {
+  let data;
+  beforeEach(() => {
+    data = initializeScure(scure, {});
+  });
+
   it('gets a name without stop words', () => {
     const item = scure.items.getItemByName('dado');
     const item2 = scure.items.getItemByName('dado de 6 caras');

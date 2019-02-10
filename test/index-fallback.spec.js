@@ -1,16 +1,21 @@
-const elCubo = require('../index.js');
+const { appExecutor, scure } = require('../index.js');
+const { initializeScure } = require('../scure/scure-initializer');
+const { StandardIntents } = require('../lib/common');
 
 describe('when fallback', () => {
+  let data;
+  beforeEach(() => {
+    data = initializeScure(scure, {});
+  });
 
-
-  it('tells yo no matching intent', () => {
+  it('tells you no matching intent', () => {
     const request = aDfaRequest()
-      .withIntent('input.unknown')
+      .withIntent(StandardIntents.NO_INPUT)
       .withData({ numCommands: 2 })
       .build();
 
-    elCubo.elCubo(request);
+    appExecutor(request);
 
-    expect(getDfaApp().lastAsk).to.contains('No te entiendo');
+    expect(getDfaV2Conv().lastAsk).to.contains('No te entiendo');
   });
 });

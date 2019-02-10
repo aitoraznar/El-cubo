@@ -1,7 +1,9 @@
 const actionsOnGoogle = require('actions-on-google');
-const actionsOnGoogleMock = require('../test/dialogflowapp-mock');
+const { DialogflowV2Mock, aDfaV2Request, getDfaV2App } = require('../mock/dialogflowapp-mock');
 
-actionsOnGoogle.DialogflowApp = actionsOnGoogleMock.DialogflowAppMock;
 
-global.aDfaRequest = actionsOnGoogleMock.aDfaRequest;
-global.getDfaApp = actionsOnGoogleMock.getDfaApp;
+actionsOnGoogle.dialogflow = DialogflowV2Mock;
+
+global.aDfaRequest = aDfaV2Request;
+global.getDfaApp = getDfaV2App;
+global.getDfaV2Conv = () => getDfaV2App().conv;

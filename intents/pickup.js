@@ -3,13 +3,13 @@ const overwriteDataFrom = require('../lib/common').overwriteDataFrom;
 
 const scurePickup = require('../scure/scure-pickup').scurePickup;
 
-const pickup = scure => (app) => {
-  const itemName = getArgument(app, 'arg');
+const pickup = scure => (conv, args) => {
+  const itemName = getArgument(args, 'arg');
 
-  const scureResponse = scurePickup(itemName, app.data, scure);
+  const scureResponse = scurePickup(itemName, conv.data, scure);
 
-  overwriteDataFrom(scureResponse, app);
-  app.ask(scureResponse.sentence);
+  overwriteDataFrom(scureResponse, conv);
+  conv.ask(scureResponse.sentence);
 };
 
 exports.pickup = pickup;

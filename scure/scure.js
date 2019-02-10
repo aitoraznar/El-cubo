@@ -1,3 +1,4 @@
+const appData = require('../ric-escape-data.js').data;
 const isEmptyArg = require('../lib/common').isEmptyArg;
 const isTextEqual = require('./scure-commons').isTextEqual;
 const joinMultipleStrings = require('./scure-commons').joinMultipleStrings;
@@ -63,6 +64,7 @@ class ScureUsages {
     return increaseUsageIndex(usageIndex, usages);
   }
 }
+
 class ScureItems {
   constructor(data) {
     this.data = data;
@@ -129,6 +131,26 @@ class ScureItems {
     if (!item.isOpeneable) return false;
     this.data.opened = this.data.opened || [];
     this.data.opened.splice(this.data.opened.indexOf(itemId), 1);
+  }
+
+  addToInventory(data, itemId) {
+    data.inventory = data.inventory || [];
+    data.inventory.push(itemId);
+    data.picked = data.picked || [];
+    data.picked.push(itemId);
+    return data;
+  }
+
+  removeFromInventory(data, itemId) {
+    data.inventory = data.inventory || [];
+    data.inventory.splice(data.inventory.indexOf(itemId), 1);
+    data.picked = data.picked || [];
+    data.picked.splice(data.picked.indexOf(itemId), 1);
+    return data;
+  }
+
+  throw(data, itemId) {
+    return this.removeFromInventory(data, itemId);
   }
 }
 
@@ -244,22 +266,29 @@ class ScureGameDecision {
 }
 
 class Scure {
-  constructor(data) {
-    this.data = data;
-    this.sentences = new ScureSentences(data);
-    this.items = new ScureItems(data);
-    this.rooms = new ScureRooms(data);
-    this.usages = new ScureUsages(data);
-    this.enemies = new ScureEnemies(data);
-    this.gameDecisions = new ScureGameDecision(data);
+  constructor(lang) {
+    this.setLanguage(lang);
+    this.sentences = new ScureSentences(this.data);
+    this.items = new ScureItems(this.data);
+    this.rooms = new ScureRooms(this.data);
+    this.usages = new ScureUsages(this.data);
+    this.enemies = new ScureEnemies(this.data);
+    this.gameDecisions = new ScureGameDecision(this.data);
   }
 
   getInit() {
     return this.data.init;
   }
+
+  setLanguage(lang) {
+    this.lang = lang;
+    this.updateData(this.lang);
+  }
+
+  updateData(lang) {
+    this.data = appData[lang];
+  }
 }
 
-const buildScureFor = data => new Scure(data);
-
-exports.buildScureFor = buildScureFor;
+exports.Scure = Scure;
 

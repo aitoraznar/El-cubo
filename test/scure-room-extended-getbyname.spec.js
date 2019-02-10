@@ -1,7 +1,12 @@
-const elCuboData = require('../ric-escape-data').data['es'];
-const scure = require('../scure/scure').buildScureFor(elCuboData);
+const { appExecutor, scure } = require('../index.js');
+const { initializeScure } = require('../scure/scure-initializer');
 
 describe('El Cubo - room extended getByName', () => {
+  let data;
+  beforeEach(() => {
+    data = initializeScure(scure, {});
+  });
+
   it('gets a room name without stop words', () => {
     const room = scure.rooms.getRoomByName('Cubo A');
 

@@ -3,15 +3,12 @@
 'use strict';
 
 process.env.DEBUG = 'actions-on-google:*';
-const DialogflowApp = require('actions-on-google').DialogflowApp;
+const { dialogflow } = require('actions-on-google');
 
 const functions = require('firebase-functions');
-const elCuboData = require('./ric-escape-data.js').data;
-const buildScureFor = require('./scure/scure').buildScureFor;
-const initialize = require('./intents/initializer').initialize;
-const isTimeOver = require('./lib/common').isTimeOver;
-const getLanguage = require('./lib/common').getLanguage;
-const cleanData = require('./lib/common').cleanData;
+const { Scure } = require('./scure/scure');
+const { initializeScure } = require('./scure/scure-initializer');
+const { isTimeOver, decodeLanguage, cleanData, StandardIntents } = require('./lib/common');
 
 const welcome = require('./intents/others').welcome;
 const startGame = require('./intents/startGame').startGame;
@@ -30,54 +27,75 @@ const throwIntent = require('./intents/throw').throw;
 const gameDecision = require('./intents/gameDecision').gameDecision;
 const manageGameDecision = require('./intents/gameDecision').manageGameDecision;
 
-const elCubo = (request, response) => {
-  const appInit = new DialogflowApp({ request, response });
-  const scure = buildScureFor(elCuboData[getLanguage(appInit, request)]);
-  const app = initialize(scure, appInit, request);
+let scure = new Scure('es');
+const isBeginning = (scure, conv) => conv.data.numCommands < scure.getInit().welcome.length;
 
-  // console.log(`Body: ${JSON.stringify(request.body)}`);
-  // console.log(`Headers: ${JSON.stringify(request.headers)}`);
-  console.log(`Intent: ${app.data.numCommands} / ${app.getIntent()} / ${getLanguage(app, request) === 'en' ? 'en' : 'es'} / Platform: ${app.data.platform} / `);
-
-  const languageChanged = checkAndChangeLanguage(scure, app);
-  if (languageChanged) {
-      app.data.numCommands -= 1;
-      return;
+const handleIntent = (intentFunction) => (conv, args) => {
+  if (!mainGameThread(conv, args)) {
+    return () => {};
   }
 
-  if (isTimeOver(app.data)) {
-      cleanData(app);
-      app.tell(scure.sentences.get('end-timeover'));
-      return;
-  }
-
-  if (!app.getIntent()) {
-    fallback(scure)(app);
-    return;
-  }
-
-  if (app.data.gameDecision && app.getIntent() !== app.StandardIntents.OPTION) {
-    gameDecision(scure)(app);
-    return;
-  }
-
-  const actionMap = new Map();
-  //actionMap.set('input.welcome', welcome(scure));
-  actionMap.set('start.game', startGame(scure));
-  actionMap.set('help', help(scure));
-  actionMap.set('look', look(scure));
-  actionMap.set('walk', walk(scure));
-  actionMap.set('pickup', pickup(scure));
-  actionMap.set('use', use(scure));
-  actionMap.set('inventory', inventory(scure));
-  actionMap.set('hit', hit(scure));
-  actionMap.set('throw', throwIntent(scure));
-  actionMap.set('bye', bye(scure));
-  actionMap.set('input.unknown', fallback(scure));
-  actionMap.set(app.StandardIntents.OPTION, manageGameDecision(scure));
-  //actionMap.set('_exit._exit-yes', bye(scure));
-
-  app.handleRequest(actionMap);
+  return intentFunction(scure)(conv, args);
 };
 
-exports.elCubo = functions.https.onRequest(elCubo);
+const mainGameThread = (conv, args) => {
+  // console.log(`Body: ${JSON.stringify(conv.body)}`);
+  // console.log(`Headers: ${JSON.stringify(conv.headers)}`);
+  conv.data.language = decodeLanguage(conv.user && conv.user.locale === 'en' ? 'en' : 'es');
+  console.log(`NumCommands: ${conv.data.numCommands} / Intent: ${conv.intent} / Action: ${conv.action} / Lang: ${conv.data.language} / Platform: ${conv.data.platform} / `);
+
+  conv.data = initializeScure(scure, conv.data);
+
+  // const languageChanged = checkAndChangeLanguage(scure, conv, args);
+  // if (languageChanged) {
+  //   conv.data.numCommands -= 1;
+  //   return false;
+  // }
+
+  if (isTimeOver(conv, scure)) {
+    cleanData(conv, args);
+    conv.close(scure.sentences.get('end-timeover'));
+    return false;
+  }
+
+  if (!conv.intent) {
+    fallback(scure)(conv, args);
+    return false;
+  }
+
+  //conv.data.gameDecision = 'cuboC-trap';
+
+  if (conv.data.gameDecision && conv.intent !== StandardIntents.OPTION) {
+    gameDecision(scure)(conv, args);
+    return false;
+  }
+
+  return true;
+};
+
+const intentSet = (executor) => {
+  executor.intent('Welcome Intent', handleIntent(welcome));
+  executor.intent('Welcome Intent - yes', handleIntent(startGame));
+  executor.intent('Help', handleIntent(help));
+  executor.intent('Look', handleIntent(look));
+  executor.intent('Walk', handleIntent(walk));
+  executor.intent('Pickup', handleIntent(pickup));
+  executor.intent('Use', handleIntent(use));
+  executor.intent('Inventory', handleIntent(inventory));
+  executor.intent('Hit', handleIntent(hit));
+  executor.intent('Throw', handleIntent(throwIntent));
+  executor.intent('Close', handleIntent(bye));
+  executor.intent('Bye', handleIntent(bye));
+  executor.intent(StandardIntents.NO_INPUT, handleIntent(fallback));
+  executor.intent('GameDecisionOption', handleIntent(manageGameDecision));
+  executor.intent('Exit - confirmation', handleIntent(bye));
+  return executor;
+};
+
+
+const app = dialogflow({ debug: true })
+  .use(intentSet);
+
+exports.appExecutor = request => { intentSet(app)(request); };
+exports.scure = scure;
+exports.elCubo = functions.https.onRequest(app);

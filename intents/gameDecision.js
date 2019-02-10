@@ -1,50 +1,57 @@
 const overwriteDataFrom = require('../lib/common').overwriteDataFrom;
 const scureGameDecision = require('../scure/scure-game-decision').scureGameDecision;
 
-const gameDecision = scure => (app) => {
-  if (!app.data.gameDecision) {
+const gameDecision = scure => (conv, args) => {
+  if (!conv.data.gameDecision) {
     return;
   }
 
-  const gameDecision = scureGameDecision(app.data, scure);
-  overwriteDataFrom(gameDecision, app);
+  const gameDecision = scureGameDecision(conv.data, scure);
+  overwriteDataFrom(gameDecision, conv);
 
-  console.log('gameDecision00000>>>>>>>>>', gameDecision.isWaitingResponse);
+  console.log('gameDecision', 'isWaitingResponse', gameDecision.isWaitingResponse);
   if (!gameDecision.isWaitingResponse) {
     gameDecision.isWaitingResponse = true;
 
-    let optionList = app.buildList(gameDecision.question);
-    let options = [];
+    console.log('gameDecision', 'buildList');
+    /*let options = [];
     gameDecision.options.forEach(option => {
-      options.push(app.buildOptionItem(option.id, option.synonyms)
-        .setTitle(option.text));
+      options.push({
+        title: option.text,
+        synonyms: option.synonyms
+      });
     });
-    optionList.addItems(options);
+    let optionList = conv.buildList({
+      title: gameDecision.question,
+      items: options
+    });*/
 
-    app.askWithList(gameDecision.title, optionList);
+    console.log('gameDecision', 'askWithList', gameDecision.title);
+    conv.ask(gameDecision.title);
+    conv.ask(gameDecision.question, gameDecision.options);
   }
 };
 
-const manageGameDecision = scure => (app) => {
-  if (!app.data.gameDecision) {
+const manageGameDecision = scure => (conv, args) => {
+  if (!conv.data.gameDecision) {
     return;
   }
 
-  const gameDecision = scureGameDecision(app.data, scure);
-  overwriteDataFrom(gameDecision, app);
+  const gameDecision = scureGameDecision(conv.data, scure);
+  overwriteDataFrom(gameDecision, conv);
 
-  console.log('manageGameDecision>>>>>>>>>', gameDecision.isWaitingResponse);
+  console.log('manageGameDecision>>>>>>>>>', 'isWaitingResponse', gameDecision.isWaitingResponse);
   if (gameDecision.isWaitingResponse) {
-    const selectedOptionId = app.getSelectedOption();
-    console.log('manageGameDecision22222>>>>>>>>>', app.getSelectedOption());
+    const selectedOptionId = conv.getSelectedOption();
+    console.log('manageGameDecision22222>>>>>>>>>', 'getSelectedOption', conv.getSelectedOption());
     const selectedOption = scure.gameDecisions.getGameDecisionOptions(selectedOptionId, gameDecision);
 
     if (selectedOption) {
       //Make 'gameDecision' as resolved
       gameDecision.isWaitingResponse = false;
-      app.data.gameDecision = null;
+      conv.data.gameDecision = null;
 
-      app.tell(selectedOption.postDescription);
+      conv.close(selectedOption.postDescription);
     }
 
   }

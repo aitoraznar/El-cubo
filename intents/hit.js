@@ -2,14 +2,14 @@ const getArgument = require('../lib/common').getArgument;
 const overwriteDataFrom = require('../lib/common').overwriteDataFrom;
 const scureHit = require('../scure/scure-hit').scureHit;
 
-const hit = scure => (app) => {
-  const weapon = getArgument(app, 'weapon');
-  const target = getArgument(app, 'target');
+const hit = scure => (conv, args) => {
+  const weapon = getArgument(args, 'weapon');
+  const target = getArgument(args, 'target');
 
-  const scureResponse = scureHit(weapon, target, app.data, scure);
+  const scureResponse = scureHit(weapon, target, conv.data, scure);
 
-  overwriteDataFrom(scureResponse, app);
-  app.ask(scureResponse.sentence);
+  overwriteDataFrom(scureResponse, conv);
+  conv.ask(scureResponse.sentence);
 };
 
 exports.hit = hit;

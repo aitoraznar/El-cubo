@@ -1,9 +1,9 @@
 const scureInventory = require('../scure/scure-inventory').scureInventory;
 
-const inventory = scure => (app) => {
-  const scureResponse = scureInventory(app.data, scure);
+const inventory = scure => (conv, args) => {
+  const scureResponse = scureInventory(conv.data, scure);
 
-  app.ask(scureResponse.sentence);
+  conv.ask(scureResponse.sentence);
 };
 
 exports.inventory = inventory;

@@ -1,8 +1,5 @@
 /* eslint-disable quote-props */
-const baseChars = require('../lib/common').baseChars;
-const getArgument = require('../lib/common').getArgument;
-const buildScureFor = require('../scure/scure').buildScureFor;
-const elCuboData = require('../ric-escape-data').data;
+const { baseChars, getArgument, getRawInput } = require('../lib/common');
 
 const VALID_LANGUAGES = {
   'english': 'en',
@@ -18,22 +15,24 @@ const getLanguageBasedOnArg = (lang) => {
   return VALID_LANGUAGES[baseLang];
 };
 
-const processChangeLanguage = (lang, app, scure) => {
+const processChangeLanguage = (lang, conv, scure) => {
   const locale = getLanguageBasedOnArg(lang);
+  console.info('_____>LOCALE', locale);
+  //TODO Change current language from Input
   if (locale) {
-    app.data.language = locale;
-    app.data.dontChangeLanguage = 1;
-    const newScure = buildScureFor(elCuboData[app.data.language]);
-    app.ask(newScure.sentences.get('changed-language', { lang }));
+    conv.data.language = locale;
+    conv.data.dontChangeLanguage = 1;
+    const newScure = scure.setLanguage(conv.data.language);
+    conv.ask(newScure.sentences.get('changed-language', { lang }));
   } else {
-    app.ask(scure.sentences.get('changed-language-unknown', { lang }));
+    conv.ask(scure.sentences.get('changed-language-unknown', { lang }));
   }
   return true;
 };
 
-const language = scure => (app) => {
-  const lang = getArgument(app, 'arg');
-  processChangeLanguage(lang, app, scure);
+const language = scure => (conv, args) => {
+  const lang = getArgument(args, 'arg');
+  processChangeLanguage(lang, conv, scure);
 };
 
 const getLanguageFromInput = (input) => {
@@ -44,12 +43,14 @@ const getLanguageFromInput = (input) => {
   return lang;
 };
 
-const checkAndChangeLangageForInput = (scure, app) => {
-  const lang = getLanguageFromInput(app.getRawInput());
-  return lang ? processChangeLanguage(lang, app, scure) : false;
+const checkAndChangeLangageForInput = (scure, conv, args) => {
+  //TODO get current language from Input
+  //const lang = getLanguageFromInput(getRawInput(args, 'arg'));
+  const lang = 'espanol';
+  return lang ? processChangeLanguage(lang, conv, scure) : false;
 };
 
 // exports.language = language;
-exports.checkAndChangeLanguage = (scure, app) =>
-  (app.getRawInput() ? checkAndChangeLangageForInput(scure, app) : false);
+exports.checkAndChangeLanguage = (scure, conv, args) =>
+  (getRawInput(conv, args) ? checkAndChangeLangageForInput(scure, conv, args) : false);
 

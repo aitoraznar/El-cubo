@@ -3,21 +3,21 @@ const getLeftTimeFrom = require('../lib/common').getLeftTimeFrom;
 const scureUse = require('../scure/scure-use').scureUse;
 const overwriteDataFrom = require('../lib/common').overwriteDataFrom;
 
-const use = scure => (app) => {
-  const items = getArgumentList(app, 'arg');
+const use = scure => (conv, args) => {
+  const items = getArgumentList(args, 'arg');
 
-  const scureResponse = scureUse(items, app.data, scure);
+  const scureResponse = scureUse(items, conv.data, scure);
 
-  overwriteDataFrom(scureResponse, app);
+  overwriteDataFrom(scureResponse, conv);
 
   const finalSentence = scureResponse.sentence;
   if (finalSentence.isEndingScene) {
     const endingRemainingTime = scure.sentences.get('ending-remaining-time',
-      { timeLeft: getLeftTimeFrom(scure, app) });
+      { timeLeft: getLeftTimeFrom(scure, conv) });
     const finalWords = `${finalSentence.description} ${endingRemainingTime}`;
-    app.tell(finalWords);
+    conv.close(finalWords);
   } else {
-    app.ask(finalSentence);
+    conv.ask(finalSentence);
   }
 };
 
